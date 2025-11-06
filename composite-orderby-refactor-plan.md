@@ -35,10 +35,10 @@ This plan outlines how to extend ORDER BY optimization so composite prefixes on
    - Extend `OrderByOptimizationInfo` with optional `composite` payload:
      ```ts
      type CompositeOrderByInfo = {
-       prefixClauses: Array<OrderByClause>;         // alias-scoped clauses
-       pkRef: PropRef;                              // derived from primaryKeyRef
-       tupleEncoder: (row: Record<string, unknown>) => Array<unknown>;
-       tupleComparator: (a: unknown, b: unknown) => number;
+       prefixClauses: Array<OrderByClause> // alias-scoped clauses
+       pkRef: PropRef // derived from primaryKeyRef
+       tupleEncoder: (row: Record<string, unknown>) => Array<unknown>
+       tupleComparator: (a: unknown, b: unknown) => number
      }
      ```
    - Preserve existing `valueExtractor`, `compare`, `index`, `limit`, `offset` for downstream operators.

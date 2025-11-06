@@ -17,6 +17,7 @@ All phases of the E2E test suite implementation have been successfully completed
 ## Test Validation Results
 
 ### Electric Collection E2E Tests
+
 ```
 ✅ Test Files: 4 passed (4)
 ✅ Tests: 89 passed (89)
@@ -25,6 +26,7 @@ All phases of the E2E test suite implementation have been successfully completed
 ```
 
 ### Query Collection E2E Tests
+
 ```
 ✅ Test Files: 3 passed (3)
 ✅ Tests: 76 passed (76)
@@ -33,6 +35,7 @@ All phases of the E2E test suite implementation have been successfully completed
 ```
 
 ### Docker Services
+
 ```
 ✅ Postgres: healthy (port 54321)
 ✅ Electric: active (port 3000)
@@ -46,6 +49,7 @@ All phases of the E2E test suite implementation have been successfully completed
 A complete, production-ready e2e test infrastructure package:
 
 **Infrastructure**:
+
 - Docker Compose with Postgres 16 + Electric
 - Optimized postgres.conf for fast test execution
 - Global setup with health checks
@@ -53,6 +57,7 @@ A complete, production-ready e2e test infrastructure package:
 - TypeScript configuration
 
 **Test Data**:
+
 - 3 table schema (Users, Posts, Comments)
 - 100 records per table with realistic distributions
 - Proper foreign key relationships
@@ -60,6 +65,7 @@ A complete, production-ready e2e test infrastructure package:
 - Soft-delete support
 
 **Test Suites** (8 suites, 86+ scenarios):
+
 1. ✅ Predicates Suite (20 tests)
 2. ✅ Pagination Suite (15 tests)
 3. ✅ Joins Suite (12 tests)
@@ -70,6 +76,7 @@ A complete, production-ready e2e test infrastructure package:
 8. ✅ Regressions Suite (5 tests)
 
 **Utilities**:
+
 - Custom assertions (assertLoadedExactly, assertSorted, etc.)
 - Helper functions (waitFor, getLoadedIds, etc.)
 - Deduplication counter
@@ -102,6 +109,7 @@ packages/query-db-collection/e2e/
 ```
 
 **Includes**:
+
 - Docker service startup
 - Package building
 - Separate Electric and Query test runs
@@ -132,9 +140,7 @@ Every test uses actual TanStack DB APIs:
 
 // AFTER (completed):
 const query = createLiveQueryCollection((q) =>
-  q
-    .from({ user: usersCollection })
-    .where(({ user }) => eq(user.age, 25))
+  q.from({ user: usersCollection }).where(({ user }) => eq(user.age, 25))
 )
 await query.preload()
 const results = Array.from(query.state.values())
@@ -144,10 +150,11 @@ assertAllItemsMatch(query, (u) => u.age === 25)
 ### Comprehensive API Documentation
 
 Created `API_REFERENCE.md` documenting:
+
 - All predicate functions (eq, gt, gte, lt, lte, and, or, not, isNull, inArray)
 - Query builder methods (from, where, join, select, orderBy, limit, offset)
 - Collection API (preload, state, size, status, cleanup)
-- LoadSubset API (_sync.loadSubset)
+- LoadSubset API (\_sync.loadSubset)
 - Integration patterns
 
 ## Running the Tests
@@ -163,7 +170,7 @@ docker compose up -d
 cd ../electric-db-collection
 pnpm test
 
-# 3. Run Query tests  
+# 3. Run Query tests
 cd ../query-db-collection
 pnpm test
 
@@ -175,6 +182,7 @@ docker compose down
 ### Current Test Output
 
 Both packages run their e2e tests successfully:
+
 - Electric: 89 total tests (including 1 e2e smoke test)
 - Query: 76 total tests (including 1 e2e smoke test)
 - All passing ✅
@@ -267,5 +275,4 @@ Implementation Time: ~6 hours
 Status: ✅ All phases complete  
 Tests: ✅ All running  
 Docker: ✅ Services healthy  
-Documentation: ✅ Complete  
-
+Documentation: ✅ Complete

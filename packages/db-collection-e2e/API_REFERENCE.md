@@ -5,10 +5,23 @@ This document describes the APIs used in the e2e test suite based on code explor
 ## Core Imports
 
 ```typescript
-import { createCollection } from '@tanstack/db'
-import { createLiveQueryCollection, Query, eq, gt, gte, lt, lte, and, or, not, isNull, inArray } from '@tanstack/db'
-import { electricCollectionOptions } from '@tanstack/electric-db-collection'
-import { queryCollectionOptions } from '@tanstack/query-db-collection'
+import { createCollection } from "@tanstack/db"
+import {
+  createLiveQueryCollection,
+  Query,
+  eq,
+  gt,
+  gte,
+  lt,
+  lte,
+  and,
+  or,
+  not,
+  isNull,
+  inArray,
+} from "@tanstack/db"
+import { electricCollectionOptions } from "@tanstack/electric-db-collection"
+import { queryCollectionOptions } from "@tanstack/query-db-collection"
 ```
 
 ## Creating Collections
@@ -16,18 +29,18 @@ import { queryCollectionOptions } from '@tanstack/query-db-collection'
 ### Electric Collections
 
 ```typescript
-import { electricCollectionOptions } from '@tanstack/electric-db-collection'
+import { electricCollectionOptions } from "@tanstack/electric-db-collection"
 
 const collection = createCollection(
   electricCollectionOptions({
-    id: 'my-collection',
+    id: "my-collection",
     shapeOptions: {
-      url: 'http://localhost:3000/v1/shape',
+      url: "http://localhost:3000/v1/shape",
       params: {
-        table: 'schema.table_name',
+        table: "schema.table_name",
       },
     },
-    syncMode: 'on-demand', // or 'eager' or 'progressive'
+    syncMode: "on-demand", // or 'eager' or 'progressive'
     getKey: (item) => item.id,
     startSync: false, // Manual start for tests
   })
@@ -37,11 +50,11 @@ const collection = createCollection(
 ### Query Collections
 
 ```typescript
-import { queryCollectionOptions } from '@tanstack/query-db-collection'
+import { queryCollectionOptions } from "@tanstack/query-db-collection"
 
 const collection = createCollection(
   queryCollectionOptions({
-    id: 'my-query-collection',
+    id: "my-query-collection",
     queryFn: async (opts) => {
       // Fetch data from backend
       return await fetchData(opts)
@@ -78,10 +91,11 @@ const count = liveQuery.size
 
 ```typescript
 const liveQuery = createLiveQueryCollection({
-  id: 'my-live-query',
-  query: (q) => q
-    .from({ user: usersCollection })
-    .where(({ user }) => eq(user.active, true)),
+  id: "my-live-query",
+  query: (q) =>
+    q
+      .from({ user: usersCollection })
+      .where(({ user }) => eq(user.active, true)),
   getKey: (item) => item.id,
   startSync: true, // Auto-start
 })
@@ -93,51 +107,42 @@ const liveQuery = createLiveQueryCollection({
 
 ```typescript
 // Equality
-eq(user.age, 25)              // user.age === 25
-ne(user.age, 25)              // user.age !== 25 (NOT eq)
+eq(user.age, 25) // user.age === 25
+ne(user.age, 25) // user.age !== 25 (NOT eq)
 
 // Comparison
-gt(user.age, 25)              // user.age > 25
-gte(user.age, 25)             // user.age >= 25
-lt(user.age, 25)              // user.age < 25
-lte(user.age, 25)             // user.age <= 25
+gt(user.age, 25) // user.age > 25
+gte(user.age, 25) // user.age >= 25
+lt(user.age, 25) // user.age < 25
+lte(user.age, 25) // user.age <= 25
 
 // Array membership
-inArray(user.id, ['id1', 'id2', 'id3'])
+inArray(user.id, ["id1", "id2", "id3"])
 
 // Null checks
-isNull(user.email)            // user.email IS NULL
+isNull(user.email) // user.email IS NULL
 // Note: isNotNull is not() + isNull()
-not(isNull(user.email))       // user.email IS NOT NULL
+not(isNull(user.email)) // user.email IS NOT NULL
 
 // String matching
-like(user.name, '%alice%')    // Case-sensitive LIKE
-ilike(user.name, '%alice%')   // Case-insensitive LIKE
+like(user.name, "%alice%") // Case-sensitive LIKE
+ilike(user.name, "%alice%") // Case-insensitive LIKE
 ```
 
 ### Boolean Logic
 
 ```typescript
 // AND - all conditions must be true
-and(
-  gt(user.age, 25),
-  eq(user.active, true)
-)
+and(gt(user.age, 25), eq(user.active, true))
 
 // OR - at least one condition must be true
-or(
-  eq(user.age, 25),
-  eq(user.age, 30)
-)
+or(eq(user.age, 25), eq(user.age, 30))
 
 // NOT - negates condition
 not(eq(user.active, true))
 
 // Complex nesting
-and(
-  or(eq(user.age, 25), eq(user.age, 30)),
-  eq(user.active, true)
-)
+and(or(eq(user.age, 25), eq(user.age, 30)), eq(user.active, true))
 ```
 
 ## Query Builder Methods
@@ -237,10 +242,10 @@ and(
 ### Properties
 
 ```typescript
-collection.size                // Number of items
-collection.state               // Map<Key, Item>
-collection.status              // 'initial' | 'loading' | 'ready' | 'cleaned-up'
-collection.compareOptions      // String collation config
+collection.size // Number of items
+collection.state // Map<Key, Item>
+collection.status // 'initial' | 'loading' | 'ready' | 'cleaned-up'
+collection.compareOptions // String collation config
 ```
 
 ### Methods
@@ -262,7 +267,7 @@ await collection.cleanup()
 collection._sync.loadSubset(options)
 ```
 
-### Sync Manager (_sync)
+### Sync Manager (\_sync)
 
 ```typescript
 // Load subset (for on-demand mode)
@@ -283,19 +288,19 @@ collection._sync.isLoadingMore
 ## Deduplication API
 
 ```typescript
-import { DeduplicatedLoadSubset } from '@tanstack/db/src/query/subset-dedupe'
+import { DeduplicatedLoadSubset } from "@tanstack/db/src/query/subset-dedupe"
 
 const dedupe = new DeduplicatedLoadSubset({
   loadSubset: async (options) => {
     // Your load logic
   },
   onDeduplicate: (options) => {
-    console.log('Deduplicated call:', options)
+    console.log("Deduplicated call:", options)
   },
 })
 
 // Use it
-await dedupe.loadSubset({ where: gt(ref('age'), val(25)) })
+await dedupe.loadSubset({ where: gt(ref("age"), val(25)) })
 ```
 
 ## Working with Results
@@ -322,7 +327,7 @@ const count = liveQuery.size
 
 ```typescript
 const subscription = liveQuery.subscribeChanges((changes) => {
-  console.log('Changes:', changes)
+  console.log("Changes:", changes)
 })
 
 // Cleanup
@@ -338,9 +343,9 @@ const collection = createCollection(
   electricCollectionOptions({
     // ...other options
     defaultStringCollation: {
-      stringSort: 'locale', // or 'lexical'
-      locale: 'en-US', // optional, for locale sort
-      sensitivity: 'base', // optional: 'base' | 'accent' | 'case' | 'variant'
+      stringSort: "locale", // or 'lexical'
+      locale: "en-US", // optional, for locale sort
+      sensitivity: "base", // optional: 'base' | 'accent' | 'case' | 'variant'
     },
   })
 )
@@ -349,8 +354,8 @@ const collection = createCollection(
 const liveQuery = createLiveQueryCollection({
   query: (q) => q.from({ user: usersCollection }),
   defaultStringCollation: {
-    stringSort: 'locale',
-    locale: 'de-DE',
+    stringSort: "locale",
+    locale: "de-DE",
   },
 })
 ```
@@ -358,9 +363,9 @@ const liveQuery = createLiveQueryCollection({
 ### Sync Modes
 
 ```typescript
-syncMode: 'eager'       // Load entire dataset immediately
-syncMode: 'on-demand'   // Load subsets as queries request them
-syncMode: 'progressive' // Start loading, allow incremental access
+syncMode: "eager" // Load entire dataset immediately
+syncMode: "on-demand" // Load subsets as queries request them
+syncMode: "progressive" // Start loading, allow incremental access
 ```
 
 ## Building Predicates with IR
@@ -368,12 +373,12 @@ syncMode: 'progressive' // Start loading, allow incremental access
 For direct loadSubset calls, use IR builders:
 
 ```typescript
-import { Func, PropRef, Value } from '@tanstack/db/src/query/ir'
+import { Func, PropRef, Value } from "@tanstack/db/src/query/ir"
 
 const ref = (path: string) => new PropRef([path])
 const val = (value: any) => new Value(value)
 
-const predicate = new Func('eq', [ref('age'), val(25)])
+const predicate = new Func("eq", [ref("age"), val(25)])
 
 await collection._sync.loadSubset({
   where: predicate,
@@ -386,40 +391,37 @@ await collection._sync.loadSubset({
 ### Pattern 1: Basic Query Test
 
 ```typescript
-it('should filter users', async () => {
+it("should filter users", async () => {
   const liveQuery = createLiveQueryCollection((q) =>
-    q
-      .from({ user: usersCollection })
-      .where(({ user }) => eq(user.age, 25))
+    q.from({ user: usersCollection }).where(({ user }) => eq(user.age, 25))
   )
-  
+
   await liveQuery.preload()
-  
+
   expect(liveQuery.size).toBe(expected)
   const results = Array.from(liveQuery.state.values())
-  expect(results.every(u => u.age === 25)).toBe(true)
+  expect(results.every((u) => u.age === 25)).toBe(true)
 })
 ```
 
 ### Pattern 2: Join Test
 
 ```typescript
-it('should join users and posts', async () => {
+it("should join users and posts", async () => {
   const liveQuery = createLiveQueryCollection((q) =>
     q
       .from({ user: usersCollection })
-      .join(
-        { post: postsCollection },
-        ({ user, post }) => eq(user.id, post.userId)
+      .join({ post: postsCollection }, ({ user, post }) =>
+        eq(user.id, post.userId)
       )
       .select(({ user, post }) => ({
         userName: user.name,
         postTitle: post.title,
       }))
   )
-  
+
   await liveQuery.preload()
-  
+
   expect(liveQuery.size).toBeGreaterThan(0)
 })
 ```
@@ -427,17 +429,17 @@ it('should join users and posts', async () => {
 ### Pattern 3: Pagination Test
 
 ```typescript
-it('should paginate results', async () => {
+it("should paginate results", async () => {
   const liveQuery = createLiveQueryCollection((q) =>
     q
       .from({ user: usersCollection })
-      .orderBy(({ user }) => user.age, 'asc')
+      .orderBy(({ user }) => user.age, "asc")
       .limit(10)
       .offset(20)
   )
-  
+
   await liveQuery.preload()
-  
+
   expect(liveQuery.size).toBe(10)
 })
 ```
@@ -445,12 +447,12 @@ it('should paginate results', async () => {
 ### Pattern 4: LoadSubset Direct Call
 
 ```typescript
-it('should load subset', async () => {
+it("should load subset", async () => {
   await collection._sync.loadSubset({
-    where: new Func('gt', [new PropRef(['age']), new Value(25)]),
+    where: new Func("gt", [new PropRef(["age"]), new Value(25)]),
     limit: 10,
   })
-  
+
   // Check collection state
   expect(collection.size).toBeLessThanOrEqual(10)
 })
@@ -462,30 +464,30 @@ it('should load subset', async () => {
 
 ```typescript
 await waitForCollectionReady(collection, 5000)
-expect(collection.status).toBe('ready')
+expect(collection.status).toBe("ready")
 ```
 
 ### Get Loaded IDs
 
 ```typescript
 const loadedIds = getLoadedIds(collection)
-expect(loadedIds).toEqual(['id1', 'id2', 'id3'])
+expect(loadedIds).toEqual(["id1", "id2", "id3"])
 ```
 
 ### Assertions
 
 ```typescript
 // Exact match
-assertLoadedExactly(collection, ['id1', 'id2'])
+assertLoadedExactly(collection, ["id1", "id2"])
 
 // At least these IDs
-assertLoadedAtLeast(collection, ['id1'])
+assertLoadedAtLeast(collection, ["id1"])
 
 // None of these IDs
-assertNotLoaded(collection, ['id99'])
+assertNotLoaded(collection, ["id99"])
 
 // Verify sorting
-assertSorted(results, 'age', 'asc')
+assertSorted(results, "age", "asc")
 
 // Verify pushdown (no over-fetching)
 assertNoPushdownViolation(collection, expectedMaxIds)
@@ -521,4 +523,3 @@ assertNoPushdownViolation(collection, expectedMaxIds)
 - `startSync: false` for manual control in tests
 - Tables in Electric use `schema.table` format
 - Predicates use functional approach (not method chaining)
-

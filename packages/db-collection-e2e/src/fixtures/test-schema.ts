@@ -1,4 +1,4 @@
-import type { User, Post, Comment } from '../types'
+import type { User, Post, Comment } from "../types"
 
 /**
  * SQL schema definitions for test tables
@@ -78,32 +78,31 @@ export async function dropTestTables(
  * Type-safe table column mappings
  */
 export const USER_COLUMNS = {
-  id: 'id',
-  name: 'name',
-  email: 'email',
-  age: 'age',
-  isActive: 'is_active',
-  createdAt: 'created_at',
-  metadata: 'metadata',
-  deletedAt: 'deleted_at',
+  id: "id",
+  name: "name",
+  email: "email",
+  age: "age",
+  isActive: "is_active",
+  createdAt: "created_at",
+  metadata: "metadata",
+  deletedAt: "deleted_at",
 } as const
 
 export const POST_COLUMNS = {
-  id: 'id',
-  userId: 'user_id',
-  title: 'title',
-  content: 'content',
-  viewCount: 'view_count',
-  publishedAt: 'published_at',
-  deletedAt: 'deleted_at',
+  id: "id",
+  userId: "user_id",
+  title: "title",
+  content: "content",
+  viewCount: "view_count",
+  publishedAt: "published_at",
+  deletedAt: "deleted_at",
 } as const
 
 export const COMMENT_COLUMNS = {
-  id: 'id',
-  postId: 'post_id',
-  userId: 'user_id',
-  text: 'text',
-  createdAt: 'created_at',
-  deletedAt: 'deleted_at',
+  id: "id",
+  postId: "post_id",
+  userId: "user_id",
+  text: "text",
+  createdAt: "created_at",
+  deletedAt: "deleted_at",
 } as const
-

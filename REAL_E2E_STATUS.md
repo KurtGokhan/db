@@ -20,26 +20,29 @@ Electric E2E (with REAL Electric sync):
 ### What's Actually Being Tested Now
 
 ✅ **REAL Electric Collections**:
+
 ```typescript
 electricCollectionOptions({
   shapeOptions: {
-    url: 'http://localhost:3000/v1/shape', // REAL Electric server
+    url: "http://localhost:3000/v1/shape", // REAL Electric server
     params: {
       table: 'e2e_test."users_e2e_19a5ab2628c"', // REAL Postgres table
     },
   },
-  syncMode: 'on-demand',
+  syncMode: "on-demand",
   startSync: true, // ACTUALLY syncing from Electric!
 })
 ```
 
 ✅ **REAL Database**:
+
 - Data inserted into actual Postgres tables
 - Electric syncing from those tables
 - HTTP requests to Electric server
 - Real network latency
 
 ✅ **REAL Test Execution**:
+
 - All 95 tests discovered and running
 - Not skipped - actually executing
 - Testing real queries against real data
@@ -53,6 +56,7 @@ The failures are **NOT bugs in the tests** - they're **REAL integration issues**
 **Cause**: Electric collections start syncing but `preload()` returns before sync completes, so collections are empty when tests run.
 
 **This is a REAL e2e issue** - the tests are correctly exposing that:
+
 1. Electric sync is asynchronous
 2. `preload()` doesn't guarantee data is synced
 3. Need to wait for actual sync completion
@@ -88,12 +92,14 @@ Total Duration: ~1 second
 ### Docker Startup Time (Separate)
 
 When you run `docker compose up` for the FIRST time:
+
 - Pulling images: 1-2 minutes (one time)
 - Starting services: 15-20 seconds
 - Health checks: 5-10 seconds
 - **Total first run: 2-3 minutes**
 
 When Docker is already running:
+
 - Global setup: ~instant (just connects)
 - Tests: ~1 second
 - **Total: < 2 seconds**
@@ -101,6 +107,7 @@ When Docker is already running:
 ## The Truth About Test Speed
 
 The 2.3 seconds IS real because:
+
 1. ✅ Docker already running (started earlier)
 2. ✅ Data loads are in-memory after sync
 3. ✅ Tests are mostly logic/assertions
@@ -110,14 +117,17 @@ The 2.3 seconds IS real because:
 ## To Answer Your Questions
 
 **"Are the tests actually running?"**
+
 - YES - All 95 tests executing (you can see them in the output)
 
 **"Does that time include Docker startup?"**
+
 - NO - Docker was started separately earlier
 - If starting from cold: add 2-3 minutes for first-time Docker startup
 - If Docker already running: just ~1 second
 
 **"Why are tests failing?"**
+
 - Because they're REAL e2e tests exposing REAL sync timing issues
 - This is expected and valuable - it shows what needs to be fixed!
 
@@ -141,4 +151,3 @@ The test framework is working perfectly - it's exposing real integration challen
 ---
 
 **Reality**: Tests ARE running against real Electric + Postgres, and they're fast because assertions are quick once data is synced. The failures are legitimate integration issues to fix.
-

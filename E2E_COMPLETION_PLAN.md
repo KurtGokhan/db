@@ -7,6 +7,7 @@ Complete the e2e test suite implementation by replacing TODO placeholders with a
 ## Current State
 
 ✅ **Infrastructure Complete**
+
 - Package structure created
 - Docker Compose configured
 - Vitest fixtures implemented
@@ -14,6 +15,7 @@ Complete the e2e test suite implementation by replacing TODO placeholders with a
 - Test suites structured with ~86 test scenarios
 
 ⚠️ **Needs Completion**
+
 - Test suite implementations (currently TODO placeholders)
 - Integration with actual @tanstack/db query APIs
 - Validation that Docker setup works
@@ -72,6 +74,7 @@ Before implementing tests, we need to understand:
    - Note any limitations or gotchas
 
 **Deliverables**:
+
 - `API_REFERENCE.md` with documented APIs
 - Understanding of what's possible vs what needs workarounds
 
@@ -115,6 +118,7 @@ Before implementing tests, we need to understand:
    - Update global setup if needed
 
 **Deliverables**:
+
 - Working Docker setup
 - Validated database connectivity
 - Validated Electric connectivity
@@ -148,6 +152,7 @@ Before implementing tests, we need to understand:
    - Check data quality
 
 **Deliverables**:
+
 - Working seed data insertion
 - Validated data in database
 - Verification script
@@ -193,6 +198,7 @@ Before implementing tests, we need to understand:
    - Use `assertLoadedExactly()`
 
 **Deliverables**:
+
 - 20 working predicate tests
 - All tests passing
 - Pushdown verified
@@ -237,6 +243,7 @@ Before implementing tests, we need to understand:
    - Edge cases
 
 **Deliverables**:
+
 - 15 working pagination tests
 - All tests passing
 - Window management verified
@@ -272,6 +279,7 @@ Before implementing tests, we need to understand:
    - Multi-collection loading
 
 **Deliverables**:
+
 - 12 working join tests
 - All tests passing
 - Multi-collection verified
@@ -307,6 +315,7 @@ Before implementing tests, we need to understand:
    - Race condition verification
 
 **Deliverables**:
+
 - 8 working deduplication tests
 - All tests passing
 - Callback verification working
@@ -344,6 +353,7 @@ Before implementing tests, we need to understand:
    - Memory #9874949
 
 **Deliverables**:
+
 - 31 additional tests implemented
 - All tests passing
 - Regression tests catching known issues
@@ -374,6 +384,7 @@ Before implementing tests, we need to understand:
    - Verify all pass
 
 **Deliverables**:
+
 - Working Electric e2e tests
 - All suites running
 - All tests passing
@@ -409,6 +420,7 @@ Before implementing tests, we need to understand:
    - Verify all pass
 
 **Deliverables**:
+
 - Working Query e2e tests
 - Mock backend complete
 - All tests passing
@@ -443,6 +455,7 @@ Before implementing tests, we need to understand:
    - Verify < 5 minutes consistently
 
 **Deliverables**:
+
 - Performance measurements
 - Optimized tests
 - < 5 minute execution time
@@ -472,6 +485,7 @@ Before implementing tests, we need to understand:
    - Show test status
 
 **Deliverables**:
+
 - Working CI pipeline
 - Tests passing in CI
 - Status badge added
@@ -502,6 +516,7 @@ Before implementing tests, we need to understand:
    - Debug tips
 
 **Deliverables**:
+
 - Updated README
 - Example integration
 - Troubleshooting guide
@@ -564,18 +579,23 @@ For fastest completion, follow this order:
 ## Risk Mitigation
 
 ### Risk: APIs don't support needed functionality
+
 **Mitigation**: Start with Phase 1 (API Research) to identify gaps early
 
 ### Risk: Tests too slow
+
 **Mitigation**: Measure early, optimize incrementally, use tmpfs
 
 ### Risk: Docker issues in CI
+
 **Mitigation**: Test locally first, use proven patterns from Electric
 
 ### Risk: Flaky tests
+
 **Mitigation**: Use fixtures properly, ensure proper cleanup, serial execution
 
 ### Risk: Deduplication complex to test
+
 **Mitigation**: Study existing deduplication implementation first
 
 ---
@@ -592,4 +612,3 @@ For fastest completion, follow this order:
 **Status**: Ready to begin Phase 1
 **Priority**: High - This is critical infrastructure for query-driven sync
 **Dependencies**: None - can start immediately
-

@@ -1,4 +1,4 @@
-import type { Collection } from '@tanstack/db'
+import type { Collection } from "@tanstack/db"
 
 /**
  * Test data schema types
@@ -77,4 +77,3 @@ export interface DbClient {
   end(): Promise<void>
   query(sql: string, values?: unknown[]): Promise<{ rows: unknown[] }>
 }
-

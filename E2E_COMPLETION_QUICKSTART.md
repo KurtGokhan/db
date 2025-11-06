@@ -3,6 +3,7 @@
 ## What's Complete ✅
 
 **Infrastructure (100% complete)**:
+
 - Package structure, Docker Compose, Vitest configuration
 - Global setup, fixtures, seed data generator
 - Test schema definitions (Users, Posts, Comments)
@@ -16,6 +17,7 @@
 ## What Needs Completion ⚠️
 
 **Test Implementations (0% complete)**:
+
 - All test suites have TODO placeholders instead of real code
 - Need integration with actual @tanstack/db APIs
 - Need to validate with real data and assertions
@@ -27,6 +29,7 @@
 ### 1. Review the Plan
 
 Read the detailed completion plan:
+
 ```bash
 cat E2E_COMPLETION_PLAN.md
 ```
@@ -48,6 +51,7 @@ cat packages/db/src/collection/sync.ts
 ```
 
 Create `API_REFERENCE.md` documenting:
+
 - How to create queries with predicates
 - How to execute queries and get results
 - How `loadSubset` works
@@ -79,27 +83,27 @@ Before implementing all 86 tests, create ONE working test to validate your appro
 ```typescript
 // packages/db-collection-e2e/src/suites/predicates.test.ts
 
-it('should filter with eq() on string field', async () => {
+it("should filter with eq() on string field", async () => {
   const config = await getConfig()
   const collection = config.collections.onDemand.users
-  
+
   // 1. Create query (using REAL API you documented)
   const query = collection.liveQuery({
-    where: eq(users.name, 'Alice 0')
+    where: eq(users.name, "Alice 0"),
   })
-  
+
   // 2. Execute query
   await query.preload()
-  
+
   // 3. Get results
   const result = query.getResult()
-  
+
   // 4. Assert
   expect(result).toHaveLength(1)
-  expect(result[0].name).toBe('Alice 0')
-  
+  expect(result[0].name).toBe("Alice 0")
+
   // 5. Verify predicate pushdown
-  assertLoadedExactly(collection, ['user-0000-4000-8000-000000000000'])
+  assertLoadedExactly(collection, ["user-0000-4000-8000-000000000000"])
 })
 ```
 
@@ -111,6 +115,7 @@ pnpm test -- --grep "should filter with eq"
 ```
 
 **If this works**, you've validated:
+
 - ✅ Docker setup works
 - ✅ Database connectivity works
 - ✅ Seed data works
@@ -162,6 +167,7 @@ Track completion with TODOs:
 When implementing tests, you'll primarily modify these files:
 
 **Test Suite Files** (add real implementations):
+
 - `packages/db-collection-e2e/src/suites/predicates.test.ts`
 - `packages/db-collection-e2e/src/suites/pagination.test.ts`
 - `packages/db-collection-e2e/src/suites/joins.test.ts`
@@ -172,35 +178,40 @@ When implementing tests, you'll primarily modify these files:
 - `packages/db-collection-e2e/src/suites/regressions.test.ts`
 
 **Integration Files** (wire up test suites):
+
 - `packages/electric-db-collection/e2e/electric.e2e.test.ts`
 - `packages/electric-db-collection/e2e/setup.ts`
 - `packages/query-db-collection/e2e/query.e2e.test.ts`
 - `packages/query-db-collection/e2e/setup.ts`
 
 **Support Files** (may need updates):
+
 - `packages/db-collection-e2e/support/test-context.ts`
 - `packages/db-collection-e2e/src/fixtures/seed-data.ts`
 
 ## Common Patterns
 
 ### Query with Predicate
+
 ```typescript
 const query = collection.liveQuery({
-  where: eq(table.field, value)
+  where: eq(table.field, value),
 })
 await query.preload()
 const result = query.getResult()
 ```
 
 ### Query with Ordering
+
 ```typescript
 const query = collection.liveQuery({
-  orderBy: [{ field: table.age, direction: 'asc' }],
-  limit: 10
+  orderBy: [{ field: table.age, direction: "asc" }],
+  limit: 10,
 })
 ```
 
 ### Query with Join
+
 ```typescript
 const query = collections.users.liveQuery({
   join: [
@@ -210,6 +221,7 @@ const query = collections.users.liveQuery({
 ```
 
 ### Check Loaded Data
+
 ```typescript
 const loadedIds = getLoadedIds(collection)
 assertLoadedExactly(collection, expectedIds)
@@ -218,6 +230,7 @@ assertLoadedExactly(collection, expectedIds)
 ## Debugging Tips
 
 ### Docker Issues
+
 ```bash
 # View logs
 docker compose logs postgres
@@ -232,6 +245,7 @@ docker compose up -d
 ```
 
 ### Test Issues
+
 ```bash
 # Run single test
 pnpm test -- --grep "test name"
@@ -244,6 +258,7 @@ pnpm test:watch
 ```
 
 ### Database Issues
+
 ```bash
 # Connect to database
 psql -h localhost -p 54321 -U postgres -d e2e_test
@@ -261,7 +276,7 @@ Before marking as complete, ensure:
 
 - [ ] All 86+ test scenarios implemented (no TODO comments)
 - [ ] All tests pass for Electric collection
-- [ ] All tests pass for Query collection  
+- [ ] All tests pass for Query collection
 - [ ] Deduplication verified via callbacks
 - [ ] Predicate pushdown verified (no over-fetching)
 - [ ] Tests run in < 5 minutes
@@ -272,6 +287,7 @@ Before marking as complete, ensure:
 ## Getting Help
 
 If stuck:
+
 1. Check `E2E_COMPLETION_PLAN.md` for detailed guidance
 2. Check `packages/db-collection-e2e/README.md` for documentation
 3. Look at existing tests in `packages/db/tests/` for patterns
@@ -290,4 +306,3 @@ If stuck:
 **Ready to start? Begin with Phase 1 (API Research)!**
 
 Mark `complete-phase1` as in-progress and start documenting the APIs.
-

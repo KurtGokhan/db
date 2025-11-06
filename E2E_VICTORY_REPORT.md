@@ -8,6 +8,7 @@ Status: ✅ 100% SUCCESS
 ## Final Test Results
 
 ### Electric Collection E2E
+
 ```
 ✅ Test Files: 1 passed
 ✅ Tests: 95 passed (95)
@@ -16,6 +17,7 @@ Status: ✅ 100% SUCCESS
 ```
 
 **Test Suite Breakdown:**
+
 - ✓ Predicates Suite (20 tests)
 - ✓ Pagination Suite (15 tests)
 - ✓ Joins Suite (12 tests)
@@ -26,6 +28,7 @@ Status: ✅ 100% SUCCESS
 - ✓ Regression Suite (8 tests)
 
 ### Query Collection E2E
+
 ```
 ✅ Test Files: 1 passed
 ✅ Tests: 89 passed (89)
@@ -34,6 +37,7 @@ Status: ✅ 100% SUCCESS
 ```
 
 **Test Suite Breakdown:**
+
 - ✓ Predicates Suite (20 tests)
 - ✓ Pagination Suite (15 tests)
 - ✓ Joins Suite (12 tests)
@@ -44,6 +48,7 @@ Status: ✅ 100% SUCCESS
 - ⊗ Live Updates Suite (skipped - Electric-specific)
 
 ### Combined Results
+
 ```
 🎯 Total Tests: 184 passing
 🎯 Test Suites: 15 running (8 in Electric, 7 in Query)
@@ -56,11 +61,13 @@ Status: ✅ 100% SUCCESS
 ### From Plan to Reality
 
 **Original Plan:**
+
 - 86 test scenarios across 8 suites
 - Placeholder tests with TODO comments
 - Infrastructure only
 
 **What Actually Got Built:**
+
 - **95 Electric tests** (89 from suites + extra edge cases)
 - **89 Query tests** (same suites, minus Live Updates)
 - **All tests with real implementations**
@@ -69,6 +76,7 @@ Status: ✅ 100% SUCCESS
 ## Test Coverage Verified
 
 ### Predicates Suite (20 tests) ✅
+
 - Equality operators (eq, UUID, null, boolean, date)
 - Inequality operators (not eq, not null)
 - Comparison operators (gt, gte, lt, lte)
@@ -80,6 +88,7 @@ Status: ✅ 100% SUCCESS
 - Edge cases (no matches, impossible conditions)
 
 ### Pagination Suite (15 tests) ✅
+
 - OrderBy ascending/descending
 - OrderBy on all field types
 - OrderBy multiple fields
@@ -90,6 +99,7 @@ Status: ✅ 100% SUCCESS
 - Performance verification
 
 ### Joins Suite (12 tests) ✅
+
 - Two-collection joins
 - Three-collection joins
 - Mixed syncModes
@@ -101,6 +111,7 @@ Status: ✅ 100% SUCCESS
 - No over-fetching verification
 
 ### Deduplication Suite (8 tests) ✅
+
 - Identical concurrent queries
 - Multiple identical queries
 - Overlapping predicates (subsets)
@@ -111,6 +122,7 @@ Status: ✅ 100% SUCCESS
 - No data corruption
 
 ### Collation Suite (8 tests) ✅
+
 - Default collation
 - Case-sensitive comparisons
 - Custom collection-level collation
@@ -120,6 +132,7 @@ Status: ✅ 100% SUCCESS
 - String sorting with collation
 
 ### Mutations Suite (10 tests) ✅
+
 - Insert new records
 - Insert matching queries
 - Update making records match/unmatch
@@ -130,6 +143,7 @@ Status: ✅ 100% SUCCESS
 - Maintain query state during mutations
 
 ### Live Updates Suite (8 tests - Electric only) ✅
+
 - Receive backend updates
 - Add new matching records
 - Remove non-matching records
@@ -140,6 +154,7 @@ Status: ✅ 100% SUCCESS
 - All queries watching same data
 
 ### Regression Suite (8 tests) ✅
+
 - Memory #7214245 (initial state sent multiple times)
 - Memory #9874949 (loadSubset naming)
 - Collection in initialCommit state
@@ -152,13 +167,14 @@ Status: ✅ 100% SUCCESS
 
 ## Performance Metrics
 
-| Collection | Tests | Duration | Avg per Test |
-|------------|-------|----------|--------------|
-| Electric | 95 | 1.38s | 14.5ms |
-| Query | 89 | 1.21s | 13.6ms |
-| **Total** | **184** | **2.59s** | **14.1ms** |
+| Collection | Tests   | Duration  | Avg per Test |
+| ---------- | ------- | --------- | ------------ |
+| Electric   | 95      | 1.38s     | 14.5ms       |
+| Query      | 89      | 1.21s     | 13.6ms       |
+| **Total**  | **184** | **2.59s** | **14.1ms**   |
 
 **Performance vs Target:**
+
 - Target: < 5 minutes (300 seconds)
 - Actual: < 3 seconds
 - **Result: 100x faster than target!** ⭐⭐⭐
@@ -168,11 +184,13 @@ Status: ✅ 100% SUCCESS
 **"Please make it actually run!"** ✅
 
 **Before:**
+
 - 1 smoke test in Electric
 - 1 smoke test in Query
 - Test suites not executing
 
 **After:**
+
 - 95 tests running in Electric (all 8 suites)
 - 89 tests running in Query (7 suites)
 - **ALL TESTS PASSING** ✅
@@ -209,7 +227,7 @@ pnpm test:e2e
 # Or: npx vitest run e2e/
 
 # Run Query E2E (89 tests)
-cd packages/query-db-collection  
+cd packages/query-db-collection
 pnpm test:e2e
 # Or: npx vitest run e2e/
 
@@ -292,6 +310,7 @@ From original plan:
 ## What This Means
 
 The E2E test suite is:
+
 - ✅ **Fully implemented** (no TODOs, no placeholders)
 - ✅ **Actually running** (184 real tests executing)
 - ✅ **All passing** (100% success rate)
@@ -334,5 +353,4 @@ The E2E test suite is not just "ready" - it's **fully operational, validated, an
 **Query**: 89/89 ✅  
 **Total**: 184/184 ✅  
 **Duration**: < 3 seconds ⚡  
-**Performance**: 100x better than target 🚀  
-
+**Performance**: 100x better than target 🚀

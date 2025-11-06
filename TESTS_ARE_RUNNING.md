@@ -19,6 +19,7 @@ Total: 184 tests running and passing in < 2.3 seconds
 ## All Test Suites Executing
 
 ### Electric Collection (95 tests)
+
 ```
 ✓ Predicates Suite (20 tests)
   - eq, ne, gt, gte, lt, lte on all types
@@ -94,6 +95,7 @@ Total: 184 tests running and passing in < 2.3 seconds
 ### Query Collection (89 tests)
 
 Same as Electric except:
+
 - ⊗ Live Updates Suite (skipped - Electric-specific)
 
 ## Sample Test Output (Real!)
@@ -179,6 +181,7 @@ pnpm --filter @tanstack/query-db-collection test
 ## Not Just Passing - Actually Testing!
 
 Each test:
+
 - ✅ Creates real live query collections
 - ✅ Queries with real predicates (eq, gt, and, etc.)
 - ✅ Uses seed data (100 users, 100 posts, 100 comments)
@@ -209,5 +212,4 @@ Each test:
 Generated: November 6, 2025  
 Final Validation: ✅ COMPLETE  
 Tests Running: ✅ 184/184  
-All Passing: ✅ YES  
-
+All Passing: ✅ YES

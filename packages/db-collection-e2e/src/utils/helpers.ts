@@ -1,4 +1,4 @@
-import type { Collection } from '@tanstack/db'
+import type { Collection } from "@tanstack/db"
 
 /**
  * Wait for a condition to be true with timeout
@@ -11,7 +11,11 @@ export async function waitFor(
     message?: string
   } = {}
 ): Promise<void> {
-  const { timeout = 5000, interval = 50, message = 'Condition not met' } = options
+  const {
+    timeout = 5000,
+    interval = 50,
+    message = "Condition not met",
+  } = options
 
   const start = Date.now()
   while (Date.now() - start < timeout) {
@@ -67,17 +71,17 @@ export function hasOnlyLoadedIds<T extends { id: string }>(
 ): boolean {
   const loadedIds = getLoadedIds(collection)
   const idsSet = new Set(ids)
-  
+
   // Check that all loaded IDs are in expected IDs
   if (!loadedIds.every((id) => idsSet.has(id))) {
     return false
   }
-  
+
   // Check that all expected IDs are loaded
   if (!ids.every((id) => loadedIds.includes(id))) {
     return false
   }
-  
+
   return true
 }
 
@@ -89,13 +93,10 @@ export async function waitForCollectionSize<T>(
   expectedSize: number,
   timeout = 5000
 ): Promise<void> {
-  await waitFor(
-    () => collection.size === expectedSize,
-    {
-      timeout,
-      message: `Collection size did not reach ${expectedSize} (current: ${collection.size})`,
-    }
-  )
+  await waitFor(() => collection.size === expectedSize, {
+    timeout,
+    message: `Collection size did not reach ${expectedSize} (current: ${collection.size})`,
+  })
 }
 
 /**
@@ -105,13 +106,10 @@ export async function waitForCollectionReady<T>(
   collection: Collection<T>,
   timeout = 5000
 ): Promise<void> {
-  await waitFor(
-    () => collection.status === 'ready',
-    {
-      timeout,
-      message: `Collection did not reach 'ready' status (current: ${collection.status})`,
-    }
-  )
+  await waitFor(() => collection.status === "ready", {
+    timeout,
+    message: `Collection did not reach 'ready' status (current: ${collection.status})`,
+  })
 }
 
 /**
@@ -144,14 +142,14 @@ export function createDeduplicationCounter() {
 export function sortBy<T, K extends keyof T>(
   array: T[],
   field: K,
-  direction: 'asc' | 'desc' = 'asc'
+  direction: "asc" | "desc" = "asc"
 ): T[] {
   return [...array].sort((a, b) => {
     const aVal = a[field]
     const bVal = b[field]
-    
-    if (aVal < bVal) return direction === 'asc' ? -1 : 1
-    if (aVal > bVal) return direction === 'asc' ? 1 : -1
+
+    if (aVal < bVal) return direction === "asc" ? -1 : 1
+    if (aVal > bVal) return direction === "asc" ? 1 : -1
     return 0
   })
 }
@@ -159,10 +157,7 @@ export function sortBy<T, K extends keyof T>(
 /**
  * Filter array by predicate function
  */
-export function filterBy<T>(
-  array: T[],
-  predicate: (item: T) => boolean
-): T[] {
+export function filterBy<T>(array: T[], predicate: (item: T) => boolean): T[] {
   return array.filter(predicate)
 }
 
@@ -174,13 +169,12 @@ export function paginate<T>(
   options: { limit?: number; offset?: number } = {}
 ): T[] {
   const { limit, offset = 0 } = options
-  
+
   let result = array.slice(offset)
-  
+
   if (limit !== undefined) {
     result = result.slice(0, limit)
   }
-  
+
   return result
 }
-

@@ -5,65 +5,63 @@ Child collections enable hierarchical data structures by allowing you to nest qu
 ## Basic Usage
 
 ```typescript
-import { createCollection, Query } from '@tanstack/db'
+import { createCollection, Query } from "@tanstack/db"
 
 const users = createCollection({
-  id: 'users',
+  id: "users",
   getKey: (user) => user.id,
-  sync: { sync: () => {} }
+  sync: { sync: () => {} },
 })
 
 const posts = createCollection({
-  id: 'posts', 
+  id: "posts",
   getKey: (post) => post.id,
-  sync: { sync: () => {} }
+  sync: { sync: () => {} },
 })
 
 const comments = createCollection({
-  id: 'comments',
+  id: "comments",
   getKey: (comment) => comment.id,
-  sync: { sync: () => {} }
+  sync: { sync: () => {} },
 })
 
 // Create a query with nested child collections
-const usersWithPosts = new Query()
-  .from({ user: users })
-  .select(({ user }) => ({
-    id: user.id,
-    name: user.name,
-    email: user.email,
-    posts: new Query()
-      .from({ post: posts })
-      .where(({ post }) => eq(post.userId, user.id))
-      .orderBy(({ post }) => post.createdAt, 'desc')
-      .limit(5)
-      .select(({ post }) => ({
-        id: post.id,
-        title: post.title,
-        content: post.content,
-        comments: new Query()
-          .from({ comment: comments })
-          .where(({ comment }) => eq(comment.postId, post.id))
-          .select(({ comment }) => ({
-            id: comment.id,
-            text: comment.text,
-            author: comment.author
-          }))
-      }))
-  }))
+const usersWithPosts = new Query().from({ user: users }).select(({ user }) => ({
+  id: user.id,
+  name: user.name,
+  email: user.email,
+  posts: new Query()
+    .from({ post: posts })
+    .where(({ post }) => eq(post.userId, user.id))
+    .orderBy(({ post }) => post.createdAt, "desc")
+    .limit(5)
+    .select(({ post }) => ({
+      id: post.id,
+      title: post.title,
+      content: post.content,
+      comments: new Query()
+        .from({ comment: comments })
+        .where(({ comment }) => eq(comment.postId, post.id))
+        .select(({ comment }) => ({
+          id: comment.id,
+          text: comment.text,
+          author: comment.author,
+        })),
+    })),
+}))
 ```
 
 ## Using Child Collections in React
 
 ```tsx
-import { useLiveQuery } from '@tanstack/react-db'
+import { useLiveQuery } from "@tanstack/react-db"
 
 function UserList() {
   const { data: users } = useLiveQuery(usersWithPosts)
 
   return (
     <div>
-      {users?.map(user => (
+      {users?.map((user) => (
         <UserCard key={user.id} user={user} />
       ))}
     </div>
@@ -78,10 +76,10 @@ function UserCard({ user }: { user: any }) {
     <div className="user-card">
       <h2>{user.name}</h2>
       <p>{user.email}</p>
-      
+
       <div className="posts">
         <h3>Recent Posts</h3>
-        {posts?.map(post => (
+        {posts?.map((post) => (
           <PostCard key={post.id} post={post} />
         ))}
       </div>
@@ -97,10 +95,10 @@ function PostCard({ post }: { post: any }) {
     <div className="post-card">
       <h4>{post.title}</h4>
       <p>{post.content}</p>
-      
+
       <div className="comments">
         <h5>Comments</h5>
-        {comments?.map(comment => (
+        {comments?.map((comment) => (
           <div key={comment.id} className="comment">
             <strong>{comment.author}:</strong> {comment.text}
           </div>
@@ -149,15 +147,16 @@ Child collections support all query features including:
 ```typescript
 posts: new Query()
   .from({ post: posts })
-  .join({ category: categories }, ({ post, category }) => 
-    eq(post.categoryId, category.id))
+  .join({ category: categories }, ({ post, category }) =>
+    eq(post.categoryId, category.id)
+  )
   .where(({ post }) => eq(post.userId, user.id))
-  .where(({ post }) => eq(post.status, 'published'))
+  .where(({ post }) => eq(post.status, "published"))
   .groupBy(({ post, category }) => category.name)
   .select(({ post, category, count }) => ({
     category: category.name,
     postCount: count(post.id),
-    latestPost: post.title
+    latestPost: post.title,
   }))
 ```
 
@@ -271,11 +270,12 @@ Child collections can only be passed through in select clauses. You cannot use t
 **Future Features**
 
 These features are planned but not yet available:
+
 - `asArray()` / `asMap()` operators to embed child data in parent rows
 - Composite join keys (multiple field joins)
 - Computed filters based on child collection properties
 
---------------------------------
+---
 
 ## Implementation Details
 
@@ -302,11 +302,12 @@ collection.utils._sync.commit()
 ```
 
 Inside `CollectionConfigBuilder` we keep a Map of key => ChildCollection, which is maintained as such:
+
 - when the parent collection row is created, we create a new ChildCollection and add it to the map if it doesn't exist
 - when the parent collection row is deleted, we delete the ChildCollection from the map
 - when a message arrives for the child collection:
- - if it is an insert or update, we retrieve the ChildCollection from the map and write the message to it
- - if it is a delete, we retrieve the ChildCollection and *if it exists* we write a delete message to it. If it doesn't exist, we ignore the message.
+- if it is an insert or update, we retrieve the ChildCollection from the map and write the message to it
+- if it is a delete, we retrieve the ChildCollection and _if it exists_ we write a delete message to it. If it doesn't exist, we ignore the message.
 
 orderBy+limit in these parallel branches are compiled using the new `groupByKey` options, so that each parent row gets its own independent window of results.
 
@@ -317,7 +318,7 @@ The results of a child collection **cannot** be used in the parent collection's 
 ```typescript
 const postsWithComments = new Query()
   .from({ post: posts })
-  .select(({ post, comment }) => ({ 
+  .select(({ post, comment }) => ({
     ...post,
     comments: new Query()
       .from({ comment: comments })
@@ -325,8 +326,8 @@ const postsWithComments = new Query()
       .select(({ comment }) => ({
         id: comment.id,
         text: comment.text,
-        author: comment.author
-      }))
+        author: comment.author,
+      })),
   }))
 
 const postsWithAtLeastOneComment = new Query()
@@ -337,8 +338,7 @@ const postsWithAtLeastOneComment = new Query()
 
 `comments` is a child collection and so it's results are not available inside the query. This needs to be enforced at the type level, as well as validated at runtime.
 
-
---------------------------------
+---
 
 ## Additional features to add:
 
@@ -347,7 +347,7 @@ const postsWithAtLeastOneComment = new Query()
 ```typescript
 const postsWithComments = new Query()
   .from({ post: posts })
-  .select(({ post, comment }) => ({ 
+  .select(({ post, comment }) => ({
     ...post,
     tags: asArray(new Query()
       .from({ tag: tags })
@@ -362,4 +362,3 @@ const postsWithComments = new Query()
 The user doesn't not then need to call `useLiveQuery` on the child collection, they can just use the array or map directly.
 
 It will still internally keep the ChildCollection to maintain this state, but when it changes it will call `update` on the parent collection. This is perfect for things like like lists of tags on a post which is much shorter, rather than comments which can be much longer and likely rendered by a different component.
-

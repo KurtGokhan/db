@@ -20,6 +20,7 @@
 ## Copy-Paste Templates
 
 ### 1. Docker Compose (postgres + server)
+
 ```yaml
 services:
   postgres:
@@ -33,7 +34,7 @@ services:
     tmpfs:
       - /var/lib/postgresql/data
       - /tmp
-  
+
   backend:
     image: your-server:latest
     environment:
@@ -45,9 +46,10 @@ services:
 ```
 
 ### 2. Global Setup Pattern
+
 ```typescript
-import type { GlobalSetupContext } from 'vitest/node'
-import { makePgClient } from './test-helpers'
+import type { GlobalSetupContext } from "vitest/node"
+import { makePgClient } from "./test-helpers"
 
 export default async function ({ provide }: GlobalSetupContext) {
   // Health check
@@ -85,9 +87,10 @@ function waitForServer(url: string): Promise<void> {
 ```
 
 ### 3. Test Context Fixtures
+
 ```typescript
-import { test } from 'vitest'
-import { Client } from 'pg'
+import { test } from "vitest"
+import { Client } from "pg"
 
 const testWithDb = test.extend<{
   dbClient: Client
@@ -123,32 +126,30 @@ export { testWithDb as it }
 ```
 
 ### 4. Parameterized Test
+
 ```typescript
-const configs = [
-  { mode: 'fetch' },
-  { mode: 'stream' },
-]
+const configs = [{ mode: "fetch" }, { mode: "stream" }]
 
 describe.for(configs)(`Data sync (mode=$mode)`, ({ mode }) => {
   it(`should sync data`, async ({ dbClient, tableName }) => {
     // Test code using mode parameter
-    expect(mode).toBe('fetch')
+    expect(mode).toBe("fetch")
   })
 })
 ```
 
 ## Configuration Values
 
-| Key | Default | Override |
-|-----|---------|----------|
-| Postgres Host | localhost | - |
-| Postgres Port | 54321 | - |
-| Postgres User | postgres | - |
-| Postgres Password | password | - |
-| Postgres Database | electric | - |
-| Server URL | http://localhost:3000 | `SERVER_URL` env |
-| Test Schema | electric_test | hardcoded |
-| Serial Execution | true | `fileParallelism: false` |
+| Key               | Default               | Override                 |
+| ----------------- | --------------------- | ------------------------ |
+| Postgres Host     | localhost             | -                        |
+| Postgres Port     | 54321                 | -                        |
+| Postgres User     | postgres              | -                        |
+| Postgres Password | password              | -                        |
+| Postgres Database | electric              | -                        |
+| Server URL        | http://localhost:3000 | `SERVER_URL` env         |
+| Test Schema       | electric_test         | hardcoded                |
+| Serial Execution  | true                  | `fileParallelism: false` |
 
 ## Test Isolation Strategy
 
@@ -164,6 +165,7 @@ Per-test tables:
 ```
 
 Each table:
+
 - Has unique name (task.id + random suffix)
 - Is created before test
 - Is dropped after test
@@ -190,14 +192,16 @@ testWithCache extends testWithData
 ## Common Patterns
 
 ### Insert Data
+
 ```typescript
-await dbClient.query(
-  `INSERT INTO ${tableName} (id, data) VALUES ($1, $2)`,
-  [uuid(), `test data`]
-)
+await dbClient.query(`INSERT INTO ${tableName} (id, data) VALUES ($1, $2)`, [
+  uuid(),
+  `test data`,
+])
 ```
 
 ### Wait for Changes
+
 ```typescript
 await new Promise((resolve) => {
   const unsubscribe = stream.subscribe((messages) => {
@@ -210,6 +214,7 @@ await new Promise((resolve) => {
 ```
 
 ### Cleanup with Error Handling
+
 ```typescript
 try {
   await cleanup()
@@ -225,7 +230,7 @@ try {
 async function waitForServer(url: string): Promise<void> {
   return new Promise((resolve, reject) => {
     const timeout = setTimeout(() => reject(`Timeout`), 10000)
-    
+
     const check = async () => {
       try {
         const res = await fetch(`${url}/health`)
@@ -239,7 +244,7 @@ async function waitForServer(url: string): Promise<void> {
         setTimeout(check, 100)
       }
     }
-    
+
     check()
   })
 }
@@ -273,6 +278,7 @@ export function makePgClient(overrides = {}) {
 ## Critical Settings
 
 ### Vitest Config
+
 ```typescript
 {
   test: {
@@ -284,36 +290,44 @@ export function makePgClient(overrides = {}) {
 ```
 
 ### Docker Compose
+
 ```yaml
-tmpfs:  # Use tmpfs for speed
+tmpfs: # Use tmpfs for speed
   - /var/lib/postgresql/data
   - /tmp
-depends_on:  # Ensure ordering
+depends_on: # Ensure ordering
   - postgres
 ```
 
 ## Debugging Tips
 
 1. **Table names in DB**: Use comments to track origin
+
    ```sql
    COMMENT ON TABLE "test_ABC_xyz" IS 'Created for file.test.ts - test name'
    ```
 
 2. **Connection issues**: Check health endpoint first
+
    ```bash
    curl http://localhost:3000/health
    ```
 
 3. **Flaky tests**: Add retry logic to health check
+
    ```typescript
    const MAX_ATTEMPTS = 50
    for (let i = 0; i < MAX_ATTEMPTS; i++) {
-     try { return await checkHealth() }
-     catch { await sleep(100) }
+     try {
+       return await checkHealth()
+     } catch {
+       await sleep(100)
+     }
    }
    ```
 
 4. **Test isolation**: Verify unique table names
+
    ```typescript
    console.log(`Using table: ${tableName}`)
    // Should show different name for each test

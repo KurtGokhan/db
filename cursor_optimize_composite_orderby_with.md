@@ -1,4 +1,5 @@
 # Optimize composite orderBy with tiebreaker
+
 _Exported on 06/11/2025 at 9:47:24 GMT from Cursor (2.1.0-pre.10.patch.0)_
 
 ---
@@ -27,11 +28,9 @@ I found the current ORDER BY optimization only handles a single ref field with l
 
 We currently auto index previdates, but i dont think we should do that on composites for orderby by defult as it could add a lot of overhead.
 
-Looking at what other databases do we should autoindex the frist column for the orderby, use that to load the data and then do the sort 
+Looking at what other databases do we should autoindex the frist column for the orderby, use that to load the data and then do the sort
 
 This isnt too disimilar to what we have at the momennt, we load the limit, then all matching values for the max value. But this causes two predicate push downs. I dont like that.
-
-
 
 I think we shold consider changinng `currentStateAsChanges` to that it:
 
@@ -45,15 +44,9 @@ I think we shold consider changinng `currentStateAsChanges` to that it:
 
 - sends the limit sorted by the full composiute to the subsciber
 
-
-
 THis is similar to what we have, but rather than doing this inside the query engine, we do it in the currentStateAsChanges
 
-
-
 Does this work?
-
-
 
 Does this ensure that the full composite orderby is sent only once for the initial load, and then each loadSubset call rather than twice?
 
@@ -81,8 +74,6 @@ collectionB is not loaded in order as it is comming from the join.
 
 Please look at how we do orderby+join to understand this
 
-
-
 on your second question, if we now have a stable tie break i suppose we need whereever we track the "max" value sent to track that as the composite incliudeing the key, and so it would then be non inclusing of the lower band as we have the key as the tie break. Does that make sense?
 
 ---
@@ -90,4 +81,3 @@ on your second question, if we now have a stable tie break i suppose we need whe
 **Cursor**
 
 I'll update the plan to incorporate your clarifications: truncate the ORDER BY to the first alias's prefix, append that collection's key, and track the exclusive lower bound using the composite (including the key) to ensure single pushdown per window.
-

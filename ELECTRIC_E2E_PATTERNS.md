@@ -1,6 +1,7 @@
 # Electric TypeScript Client E2E Test Infrastructure & Patterns
 
 ## Overview
+
 Electric's TypeScript client uses Vitest as the test framework with comprehensive e2e testing against Docker-containerized Postgres and Electric server. The approach provides excellent patterns for test isolation, parameterized testing, and database management.
 
 ---
@@ -8,13 +9,14 @@ Electric's TypeScript client uses Vitest as the test framework with comprehensiv
 ## 1. DOCKER ORCHESTRATION & SETUP
 
 ### Docker Compose Configuration
+
 Location: `~/.support/docker-compose.yml`
 
 The setup uses two main services:
 
 ```yaml
-version: '3.3'
-name: 'electric_example-${PROJECT_NAME:-default}'
+version: "3.3"
+name: "electric_example-${PROJECT_NAME:-default}"
 
 services:
   postgres:
@@ -49,6 +51,7 @@ services:
 ```
 
 **Key Design Decisions:**
+
 - Postgres uses tmpfs for `/var/lib/postgresql/data` for fast test execution
 - Postgres config file loaded from host for custom settings
 - Electric backend depends_on postgres for startup ordering
@@ -57,7 +60,9 @@ services:
 - Default port mapping: Postgres 54321, Electric 3000
 
 ### Connection Details for Tests
+
 Tests connect via:
+
 - Host: `localhost`
 - Port: `54321` (Postgres)
 - User: `postgres`
@@ -73,6 +78,7 @@ Tests connect via:
 Rather than creating separate databases, Electric uses **schema isolation**:
 
 **Global Setup** (`test/support/global-setup.ts`):
+
 ```typescript
 /**
  * Global setup for the test suite. Validates that our server is running, and creates and tears down a
@@ -109,7 +115,7 @@ issuesTableSql: async ({ dbClient, task }, use) => {
   const tableName = `"issues for ${task.id}_${Math.random()
     .toString(16)
     .replace(`.`, `_`)}"`
-  
+
   // Setup table for test
   await dbClient.query(`
     DROP TABLE IF EXISTS ${tableName};
@@ -122,9 +128,9 @@ issuesTableSql: async ({ dbClient, task }, use) => {
       task.file?.name.replace(/'/g, `\``) ?? `unknown`
     } - ${task.name.replace(`'`, `\``)}';
   `)
-  
+
   await use(tableName)
-  
+
   // Cleanup table after test
   await dbClient.query(`DROP TABLE ${tableName}`)
 },
@@ -159,6 +165,7 @@ tableSql: async ({ dbClient, task }, use) => {
 ```
 
 **Benefits of This Approach:**
+
 - Single database connection simplifies setup/teardown
 - Tests can run serially without interference
 - Clear table names aid in debugging (include test file + test name + random suffix)
@@ -173,7 +180,9 @@ tableSql: async ({ dbClient, task }, use) => {
 ### Three-Level Lifecycle Management
 
 #### Level 1: Global Setup (One-time per test run)
+
 File: `vitest.config.ts`
+
 ```typescript
 export default defineConfig({
   test: {
@@ -189,12 +198,15 @@ export default defineConfig({
 ```
 
 Key settings:
+
 - `fileParallelism: false` - Tests run serially (important for shared database)
 - `globalSetup` runs once before all tests
 - `setupFiles` runs before each test file
 
 #### Level 2: Global Setup/Teardown
+
 File: `test/support/global-setup.ts`
+
 ```typescript
 export default async function ({ provide }: GlobalSetupContext) {
   // SETUP
@@ -202,10 +214,10 @@ export default async function ({ provide }: GlobalSetupContext) {
   const client = makePgClient()
   await client.connect()
   await client.query(`CREATE SCHEMA IF NOT EXISTS electric_test`)
-  
+
   provide(`baseUrl`, url)
   provide(`testPgSchema`, `electric_test`)
-  
+
   // Return cleanup function (runs once at end of all tests)
   return async () => {
     await client.query(`DROP SCHEMA electric_test CASCADE`)
@@ -215,7 +227,9 @@ export default async function ({ provide }: GlobalSetupContext) {
 ```
 
 #### Level 3: Fixture-Level Lifecycle (Per test)
+
 File: `test/support/test-context.ts`
+
 ```typescript
 export const testWithDbClient = test.extend<{
   dbClient: Client
@@ -229,38 +243,38 @@ export const testWithDbClient = test.extend<{
     const searchOption = `-csearch_path=${inject(`testPgSchema`)}`
     const client = makePgClient({ options: searchOption })
     await client.connect()
-    
+
     // Pass client to test
     await use(client)
-    
+
     // Cleanup: Close connection
     await client.end()
   },
-  
+
   // Setup: Create abort controller for cancellation
   aborter: async ({}, use) => {
     const controller = new AbortController()
     await use(controller)
-    
+
     // Cleanup: Abort any pending operations
     controller.abort(`Test complete`)
   },
-  
+
   // Inject provided values
   baseUrl: async ({}, use) => use(inject(`baseUrl`)),
   pgSchema: async ({}, use) => use(inject(`testPgSchema`)),
-  
+
   // Custom utility: Clear shape caches
   clearShape: async ({}, use) => {
     await use(async (table: string, options = {}) => {
       const baseUrl = inject(`baseUrl`)
       const url = new URL(`${baseUrl}/v1/shape`)
       url.searchParams.set(`table`, table)
-      
+
       if (options.handle) {
         url.searchParams.set(SHAPE_HANDLE_QUERY_PARAM, options.handle)
       }
-      
+
       const resp = await fetch(url.toString(), { method: `DELETE` })
       if (!resp.ok && resp.status !== 404) {
         throw new Error(`Could not delete shape`)
@@ -271,6 +285,7 @@ export const testWithDbClient = test.extend<{
 ```
 
 #### Level 4: Table Fixtures (Extends dbClient)
+
 ```typescript
 export const testWithIssuesTable = testWithDbClient.extend<{
   issuesTableSql: string
@@ -288,7 +303,7 @@ export const testWithIssuesTable = testWithDbClient.extend<{
     await use(tableName)
     await dbClient.query(`DROP TABLE ${tableName}`)
   },
-  
+
   issuesTableUrl: async ({ issuesTableSql, pgSchema, clearShape }, use) => {
     const urlAppropriateTable = pgSchema + `.` + issuesTableSql
     await use(urlAppropriateTable)
@@ -298,7 +313,7 @@ export const testWithIssuesTable = testWithDbClient.extend<{
       // ignore - clearShape has its own logging
     }
   },
-  
+
   // Insert helper
   insertIssues: ({ issuesTableSql, dbClient }, use) =>
     use(async (...rows) => {
@@ -319,7 +334,7 @@ export const testWithIssuesTable = testWithDbClient.extend<{
 For tests that don't need database access:
 
 ```typescript
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
+import { beforeEach, afterEach, describe, expect, it, vi } from "vitest"
 
 describe(`ExpiredShapesCache`, () => {
   let cache: ExpiredShapesCache
@@ -352,6 +367,7 @@ Electric doesn't use traditional migrations in the test setup. Instead:
 4. **Custom types created per-test**: Types like `mood` enum are created per test if needed
 
 **Example: Multi-type table setup with custom types**
+
 ```typescript
 await dbClient.query(`
   DROP TABLE IF EXISTS ${tableName};
@@ -387,6 +403,7 @@ await dbClient.query(`
 ```
 
 **Why this approach:**
+
 - Tests are self-contained and don't depend on external migration state
 - Schema is visible where it's used
 - Easy to understand what data each test expects
@@ -398,9 +415,11 @@ await dbClient.query(`
 ## 5. TEST CONFIGURATION & UTILITIES
 
 ### Vitest Configuration
+
 File: `vitest.config.ts`
+
 ```typescript
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from "vitest/config"
 
 export default defineConfig({
   test: {
@@ -421,7 +440,9 @@ export default defineConfig({
 ```
 
 ### Health Check Pattern
+
 File: `test/support/global-setup.ts`
+
 ```typescript
 function waitForElectric(url: string): Promise<void> {
   return new Promise<void>((resolve, reject) => {
@@ -450,12 +471,15 @@ function waitForElectric(url: string): Promise<void> {
 ```
 
 **Key utilities:**
+
 - Polls health endpoint until status is "active"
 - 10 second timeout before failure
 - Recursive polling (retry until success or timeout)
 
 ### Database Client Helper
+
 File: `test/support/test-helpers.ts`
+
 ```typescript
 export function makePgClient(overrides: ClientConfig = {}) {
   return new Client({
@@ -471,13 +495,15 @@ export function makePgClient(overrides: ClientConfig = {}) {
 ```
 
 **Design:**
+
 - Encapsulates connection defaults
 - Allows overrides for specific tests (e.g., search_path for schemas)
 - Uses "pg" library (PostGres native client)
 
 ### Context Providers (Vitest 3.0+)
+
 ```typescript
-declare module 'vitest' {
+declare module "vitest" {
   export interface ProvidedContext {
     baseUrl: string
     proxyCacheBaseUrl: string
@@ -489,12 +515,15 @@ declare module 'vitest' {
 ```
 
 Values are injected in tests via `inject()`:
+
 ```typescript
 const BASE_URL = inject(`baseUrl`)
 ```
 
 ### Message Waiting Helper
+
 File: `test/support/test-helpers.ts`
+
 ```typescript
 export async function waitForTransaction({
   baseUrl,
@@ -512,7 +541,7 @@ export async function waitForTransaction({
   const waitAborter = new AbortController()
   if (aborter?.signal.aborted) waitAborter.abort()
   else aborter?.signal.addEventListener(`abort`, () => waitAborter.abort())
-  
+
   const issueStream = new ShapeStream({
     ...(shapeStreamOptions ?? {}),
     url: `${baseUrl}/v1/shape`,
@@ -526,7 +555,7 @@ export async function waitForTransaction({
 
   numChangesExpected ??= 1
   let numChangesSeen = 0
-  
+
   await forEachMessage(issueStream, waitAborter, (res, msg) => {
     if (isChangeMessage(msg)) {
       numChangesSeen++
@@ -536,7 +565,7 @@ export async function waitForTransaction({
       res()
     }
   })
-  
+
   return {
     offset: issueStream.lastOffset,
     handle: issueStream.shapeHandle,
@@ -549,7 +578,9 @@ export async function waitForTransaction({
 ## 6. PARAMETERIZED TESTING PATTERNS
 
 ### Simple Parameter List
+
 File: `test/integration.test.ts`
+
 ```typescript
 const fetchAndSse = [{ liveSse: false }, { liveSse: true }]
 
@@ -566,7 +597,7 @@ describe(`HTTP Sync`, () => {
         },
         subscribe: false,
         signal: aborter.signal,
-        liveSse,  // Parameter from the array
+        liveSse, // Parameter from the array
       })
 
       await new Promise<void>((resolve, reject) => {
@@ -591,13 +622,15 @@ describe(`HTTP Sync`, () => {
 ```
 
 ### Parameterized Describe Block
+
 File: `test/client.test.ts`
+
 ```typescript
 const fetchAndSse = [{ liveSse: false }, { liveSse: true }]
 
 describe.for(fetchAndSse)(`Shape (liveSSE=$liveSse)`, ({ liveSse }) => {
   // All tests in this describe run twice (once per parameter set)
-  
+
   it(`should sync an empty shape`, async ({ issuesTableUrl, aborter }) => {
     const start = Date.now()
     const shapeStream = new ShapeStream({
@@ -606,7 +639,7 @@ describe.for(fetchAndSse)(`Shape (liveSSE=$liveSse)`, ({ liveSse }) => {
         table: issuesTableUrl,
       },
       signal: aborter.signal,
-      liveSse,  // Available from describe scope
+      liveSse, // Available from describe scope
     })
     const shape = new Shape(shapeStream)
 
@@ -642,7 +675,9 @@ describe.for(fetchAndSse)(`Shape (liveSSE=$liveSse)`, ({ liveSse }) => {
 ```
 
 ### Parameterized Multi-Type Tests
+
 File: `test/integration.test.ts`
+
 ```typescript
 mit.for(fetchAndSse)(
   `should parse incoming data (liveSSE=$liveSse)`,
@@ -675,7 +710,10 @@ mit.for(fetchAndSse)(
       )
     `,
       [
-        [[1, 2, 3], [4, 5, 6]],
+        [
+          [1, 2, 3],
+          [4, 5, 6],
+        ],
         [1, 2, 3],
         [true, false, true],
         [`sad`, `ok`, `happy`],
@@ -709,6 +747,7 @@ mit.for(fetchAndSse)(
 ```
 
 **Parameterization Key Points:**
+
 - `it.for(params)` runs test multiple times with each param set
 - `describe.for(params)` runs all tests in describe block multiple times
 - Parameters are destructured in callback: `async ({ liveSse }, { fixtures })`
@@ -720,10 +759,11 @@ mit.for(fetchAndSse)(
 ## 7. REAL-WORLD USAGE EXAMPLES
 
 ### Complete Integration Test Example
+
 ```typescript
-import { describe, expect, inject } from 'vitest'
-import { testWithIssuesTable as it } from './support/test-context'
-import { ShapeStream } from '../src'
+import { describe, expect, inject } from "vitest"
+import { testWithIssuesTable as it } from "./support/test-context"
+import { ShapeStream } from "../src"
 
 const BASE_URL = inject(`baseUrl`)
 const fetchAndSse = [{ liveSse: false }, { liveSse: true }]
@@ -772,7 +812,7 @@ describe(`HTTP Sync`, () => {
       // Assert
       const values = [...shapeData.values()]
       expect(values).toMatchObject([{ title: `foo + ${uuid}` }])
-      
+
       // Cleanup: Automatic! Fixtures handle:
       // - Table drops (issuesTableSql fixture)
       // - Shape cache clears (issuesTableUrl fixture)
@@ -784,7 +824,9 @@ describe(`HTTP Sync`, () => {
 ```
 
 ### Cache Testing with Proxy Container Access
+
 File: `test/cache.test.ts`
+
 ```typescript
 const it = testWithIssuesTable.extend<{
   proxyCacheBaseUrl: string
@@ -867,6 +909,7 @@ describe(`HTTP Proxy Cache`, () => {
 ## 8. KEY ARCHITECTURAL PATTERNS
 
 ### Fixture Composition Pattern
+
 The test fixtures form a chain where each level builds on the previous:
 
 ```
@@ -882,11 +925,13 @@ Individual tests using testWithIssuesTable
 ```
 
 Each level adds new fixtures while inheriting parent fixtures:
+
 - `testWithDbClient` adds: `dbClient`, `aborter`, `baseUrl`, `pgSchema`, `clearShape`
 - `testWithIssuesTable` adds: `issuesTableSql`, `issuesTableUrl`, `issuesTableKey`, `insertIssues`, `deleteIssue`, `updateIssue`, etc.
 - Custom test extends can further extend (like `proxyCacheBaseUrl`, `clearCache`)
 
 ### Lifecycle Management Pattern
+
 ```
 SETUP                          USE                        TEARDOWN
 ├─ Create client ────────────→ Test runs ────────────────→ End connection
@@ -897,6 +942,7 @@ SETUP                          USE                        TEARDOWN
 ```
 
 ### Test Isolation Pattern
+
 ```
 Global Schema: electric_test (created once, dropped once)
     │
@@ -904,7 +950,7 @@ Global Schema: electric_test (created once, dropped once)
     │   ├─ Test runs
     │   └─ DROP table
     │
-    ├─ Test 2: creates "issues for DEF456_abc" table  
+    ├─ Test 2: creates "issues for DEF456_abc" table
     │   ├─ Test runs
     │   └─ DROP table
     │
@@ -914,12 +960,14 @@ Global Schema: electric_test (created once, dropped once)
 ```
 
 Each test has:
+
 - Unique table names (task.id + random suffix)
 - Isolated data (no cross-test pollution)
 - Full cleanup (drop table + clear shapes + close connections)
 - Comments showing which test created the table (helpful for debugging)
 
 ### Error Resilience Pattern
+
 ```typescript
 try {
   await clearShape(urlAppropriateTable)
@@ -999,6 +1047,7 @@ packages/typescript-client/
 ## Environment Configuration
 
 ### Database Connection (hardcoded in test-helpers.ts)
+
 ```
 Host: localhost
 Port: 54321
@@ -1009,12 +1058,14 @@ Search path: electric_test (for tests)
 ```
 
 ### Electric Server
+
 ```
 URL: http://localhost:3000
 Health endpoint: http://localhost:3000/v1/health
 ```
 
 ### Proxy Cache (optional, for cache tests)
+
 ```
 Container: electric_dev-nginx-1
 URL: http://localhost:3002
@@ -1022,6 +1073,7 @@ Cache path: /var/cache/nginx/*
 ```
 
 These can be overridden via environment variables in global-setup.ts:
+
 ```typescript
 const url = process.env.ELECTRIC_URL ?? `http://localhost:3000`
 const proxyUrl = process.env.ELECTRIC_PROXY_CACHE_URL ?? `http://localhost:3002`

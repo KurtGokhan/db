@@ -18,10 +18,12 @@ This document restarts the child collections project from the original baseline 
 ## Phase 0 – Baseline Preparation
 
 **Prerequisites**
+
 - Start from the last known-good revision (no experimental child collection commits).
 - The plan assumes existing query compilation (parent queries only) is stable.
 
 **Artifacts**
+
 - Save a copy of this plan in `docs/internal/child-collections-refactor-plan.md`.
 
 ---
@@ -75,9 +77,11 @@ This document restarts the child collections project from the original baseline 
 ## Phase 3 – Compilation Result Metadata
 
 In `compileQuery`, extend `CompilationResult` to include:
+
 - `childCollections?: Record<string, ChildCollectionMetadata>`
 
 Each metadata entry contains:
+
 - `fieldName` (e.g., `posts` or `user.posts`)
 - `modifiedChildQuery` (without the parent predicate)
 - `joinKey` (parent/child field paths + child alias)
@@ -90,6 +94,7 @@ Each metadata entry contains:
 **File:** `packages/db/src/query/live/child-collection.ts`
 
 Implement `ChildCollectionManager`:
+
 - Stores per-parent child collections (`Map<parentKey, CollectionImpl>`).
 - `getOrCreateChildCollection(parentKey)` creates a child `CollectionImpl` with:
   - `id: <parentId>:<fieldName>:<parentKey>`
@@ -136,7 +141,8 @@ Build the runtime composition:
      ```ts
      const joinedStream = childJoinStream.pipe(
        innerJoin(parentJoinKeyStream, {
-         equals: ([childParentKey], [parentJoinKey]) => Object.is(childParentKey, parentJoinKey),
+         equals: ([childParentKey], [parentJoinKey]) =>
+           Object.is(childParentKey, parentJoinKey),
        })
      )
      ```
@@ -145,7 +151,9 @@ Build the runtime composition:
 6. **Child OrderBy/Limit (Optional)**
    - If child query has `orderBy`, re-run `orderByWithFractionalIndex` on the child pipeline with:
      ```ts
-     groupKeyFn: groupKeyFn || ((namespacedRow) => extractParentJoinKey(namespacedRow, joinKey.childFieldPath))
+     groupKeyFn: groupKeyFn ||
+       ((namespacedRow) =>
+         extractParentJoinKey(namespacedRow, joinKey.childFieldPath))
      ```
    - This partitions top-k per parent.
 
@@ -211,6 +219,7 @@ Create dedicated test files under `packages/db/tests/query/`:
    - Parent deletion cleans up child collections (no lingering state).
 
 **Test utilities**
+
 - Provide helper functions to push data into parent collections and inspect child collections via `_sync`.
 
 ---

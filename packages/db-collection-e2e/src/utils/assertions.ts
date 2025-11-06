@@ -1,6 +1,6 @@
-import { expect } from 'vitest'
-import type { Collection } from '@tanstack/db'
-import { getLoadedIds, hasOnlyLoadedIds } from './helpers'
+import { expect } from "vitest"
+import type { Collection } from "@tanstack/db"
+import { getLoadedIds, hasOnlyLoadedIds } from "./helpers"
 
 /**
  * Assert that a collection has loaded exactly the expected items (no more, no less)
@@ -19,7 +19,7 @@ export function assertLoadedExactly<T extends { id: string }>(
   if (extraIds.length > 0) {
     throw new Error(
       message ??
-        `Collection has extra items: ${extraIds.join(', ')} (expected only: ${expectedIds.join(', ')})`
+        `Collection has extra items: ${extraIds.join(", ")} (expected only: ${expectedIds.join(", ")})`
     )
   }
 
@@ -28,7 +28,7 @@ export function assertLoadedExactly<T extends { id: string }>(
   if (missingIds.length > 0) {
     throw new Error(
       message ??
-        `Collection is missing items: ${missingIds.join(', ')} (loaded: ${loadedIds.join(', ')})`
+        `Collection is missing items: ${missingIds.join(", ")} (loaded: ${loadedIds.join(", ")})`
     )
   }
 }
@@ -48,7 +48,7 @@ export function assertLoadedAtLeast<T extends { id: string }>(
   if (missingIds.length > 0) {
     throw new Error(
       message ??
-        `Collection is missing items: ${missingIds.join(', ')} (loaded: ${loadedIds.join(', ')})`
+        `Collection is missing items: ${missingIds.join(", ")} (loaded: ${loadedIds.join(", ")})`
     )
   }
 }
@@ -67,7 +67,7 @@ export function assertNotLoaded<T extends { id: string }>(
   const foundIds = forbiddenIds.filter((id) => loadedSet.has(id))
   if (foundIds.length > 0) {
     throw new Error(
-      message ?? `Collection should not have loaded: ${foundIds.join(', ')}`
+      message ?? `Collection should not have loaded: ${foundIds.join(", ")}`
     )
   }
 }
@@ -108,14 +108,14 @@ export function assertAllItemsMatch<T>(
 export function assertSorted<T, K extends keyof T>(
   items: T[],
   field: K,
-  direction: 'asc' | 'desc' = 'asc',
+  direction: "asc" | "desc" = "asc",
   message?: string
 ) {
   for (let i = 1; i < items.length; i++) {
     const prev = items[i - 1][field]
     const curr = items[i][field]
 
-    if (direction === 'asc') {
+    if (direction === "asc") {
       if (prev > curr) {
         throw new Error(
           message ??
@@ -147,7 +147,7 @@ export function assertNoPushdownViolation<T extends { id: string }>(
 
   // Check if any loaded IDs are not in expected set
   const extraIds = loadedIds.filter((id) => !expectedSet.has(id))
-  
+
   if (extraIds.length > 0) {
     throw new Error(
       message ??
@@ -165,11 +165,8 @@ export function assertDeduplicationOccurred(
   expectedActualLoads: number,
   message?: string
 ) {
-  expect(actualLoads, message ?? 'Actual loads').toBe(expectedActualLoads)
-  expect(
-    deduplicatedLoads,
-    message ?? 'Deduplicated loads'
-  ).toBeGreaterThan(0)
+  expect(actualLoads, message ?? "Actual loads").toBe(expectedActualLoads)
+  expect(deduplicatedLoads, message ?? "Deduplicated loads").toBeGreaterThan(0)
 }
 
 /**
@@ -180,7 +177,6 @@ export function assertNoDeduplication(
   deduplicatedLoads: number,
   message?: string
 ) {
-  expect(deduplicatedLoads, message ?? 'Deduplicated loads').toBe(0)
-  expect(actualLoads, message ?? 'Actual loads').toBeGreaterThan(0)
+  expect(deduplicatedLoads, message ?? "Deduplicated loads").toBe(0)
+  expect(actualLoads, message ?? "Actual loads").toBeGreaterThan(0)
 }
-

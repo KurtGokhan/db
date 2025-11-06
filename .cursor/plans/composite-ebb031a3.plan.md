@@ -1,4 +1,5 @@
 <!-- ebb031a3-a65e-49c2-ae82-c2b4194a514c 98edba78-9d94-441c-bad4-a052b8b3167f -->
+
 # Composite ORDER BY Windows with Compiler Metadata
 
 ## Scope overview

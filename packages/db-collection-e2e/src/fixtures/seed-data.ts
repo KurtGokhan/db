@@ -1,5 +1,5 @@
-import type { User, Post, Comment, SeedDataResult } from '../types'
-import { randomUUID } from 'crypto'
+import type { User, Post, Comment, SeedDataResult } from "../types"
+import { randomUUID } from "crypto"
 
 // Cache UUIDs for deterministic behavior across test runs
 const uuidCache = new Map<string, string>()
@@ -11,16 +11,19 @@ function generateId(prefix: string, index: number): string {
   const key = `${prefix}-${index}`
   if (!uuidCache.has(key)) {
     // Generate a real UUID but make it deterministic for the same prefix+index
-    const hex = index.toString(16).padStart(8, '0')
+    const hex = index.toString(16).padStart(8, "0")
     // Create a valid UUID v4 format
-    uuidCache.set(key, `${hex.slice(0, 8)}-0000-4000-8000-${hex.padStart(12, '0')}`)
+    uuidCache.set(
+      key,
+      `${hex.slice(0, 8)}-0000-4000-8000-${hex.padStart(12, "0")}`
+    )
   }
   return uuidCache.get(key)!
 }
 
 /**
  * Generate seed data with proper distributions for testing
- * 
+ *
  * Data characteristics:
  * - ~100 users with varied attributes
  * - ~100 posts distributed across users
@@ -42,15 +45,30 @@ export function generateSeedData(): SeedDataResult {
 
   // Generate 100 users with varied distributions
   for (let i = 0; i < 100; i++) {
-    const id = generateId('user', i)
-    
+    const id = generateId("user", i)
+
     // Name variations for collation testing
     const names = [
-      `Alice ${i}`, `bob ${i}`, `Charlie ${i}`, `DIANA ${i}`,
-      `Eve ${i}`, `Frank ${i}`, `Grace ${i}`, `henry ${i}`,
-      `Ivy ${i}`, `Jack ${i}`, `Kate ${i}`, `liam ${i}`,
-      `Mia ${i}`, `Noah ${i}`, `Olivia ${i}`, `PAUL ${i}`,
-      `Quinn ${i}`, `Rose ${i}`, `sam ${i}`, `Tina ${i}`,
+      `Alice ${i}`,
+      `bob ${i}`,
+      `Charlie ${i}`,
+      `DIANA ${i}`,
+      `Eve ${i}`,
+      `Frank ${i}`,
+      `Grace ${i}`,
+      `henry ${i}`,
+      `Ivy ${i}`,
+      `Jack ${i}`,
+      `Kate ${i}`,
+      `liam ${i}`,
+      `Mia ${i}`,
+      `Noah ${i}`,
+      `Olivia ${i}`,
+      `PAUL ${i}`,
+      `Quinn ${i}`,
+      `Rose ${i}`,
+      `sam ${i}`,
+      `Tina ${i}`,
     ]
     const name = names[i % names.length]
 
@@ -67,10 +85,14 @@ export function generateSeedData(): SeedDataResult {
     const createdAt = new Date(now.getTime() - Math.random() * oneYear)
 
     // Metadata: 40% have metadata, 60% null
-    const metadata = i % 5 < 2 ? { score: i * 10, level: Math.floor(i / 10) } : null
+    const metadata =
+      i % 5 < 2 ? { score: i * 10, level: Math.floor(i / 10) } : null
 
     // DeletedAt: 10% soft deleted
-    const deletedAt = i % 10 === 0 ? new Date(now.getTime() - Math.random() * oneDay * 30) : null
+    const deletedAt =
+      i % 10 === 0
+        ? new Date(now.getTime() - Math.random() * oneDay * 30)
+        : null
 
     users.push({
       id,
@@ -86,8 +108,8 @@ export function generateSeedData(): SeedDataResult {
 
   // Generate 100 posts distributed across users
   for (let i = 0; i < 100; i++) {
-    const id = generateId('post', i)
-    
+    const id = generateId("post", i)
+
     // Distribute posts across users (some users have multiple posts)
     const userId = users[i % users.length].id
 
@@ -103,18 +125,23 @@ export function generateSeedData(): SeedDataResult {
     const title = titles[i % titles.length]
 
     // Content: 70% have content, 30% null
-    const content = i % 10 < 7 ? `This is the content for post ${i}. Lorem ipsum dolor sit amet.` : null
+    const content =
+      i % 10 < 7
+        ? `This is the content for post ${i}. Lorem ipsum dolor sit amet.`
+        : null
 
     // ViewCount: varied distribution
     const viewCount = i === 0 ? 0 : i === 1 ? -10 : i * 42
 
     // PublishedAt: 80% published, 20% null (drafts)
-    const publishedAt = i % 5 !== 0 
-      ? new Date(now.getTime() - Math.random() * oneYear)
-      : null
+    const publishedAt =
+      i % 5 !== 0 ? new Date(now.getTime() - Math.random() * oneYear) : null
 
     // DeletedAt: 5% soft deleted
-    const deletedAt = i % 20 === 0 ? new Date(now.getTime() - Math.random() * oneDay * 10) : null
+    const deletedAt =
+      i % 20 === 0
+        ? new Date(now.getTime() - Math.random() * oneDay * 10)
+        : null
 
     posts.push({
       id,
@@ -129,8 +156,8 @@ export function generateSeedData(): SeedDataResult {
 
   // Generate 100 comments distributed across posts
   for (let i = 0; i < 100; i++) {
-    const id = generateId('comment', i)
-    
+    const id = generateId("comment", i)
+
     // Distribute comments across posts (some posts have multiple comments)
     const postId = posts[i % posts.length].id
     const userId = users[(i * 3) % users.length].id
@@ -150,7 +177,8 @@ export function generateSeedData(): SeedDataResult {
     const createdAt = new Date(now.getTime() - Math.random() * (oneYear / 2))
 
     // DeletedAt: 8% soft deleted
-    const deletedAt = i % 13 === 0 ? new Date(now.getTime() - Math.random() * oneDay * 5) : null
+    const deletedAt =
+      i % 13 === 0 ? new Date(now.getTime() - Math.random() * oneDay * 5) : null
 
     comments.push({
       id,
@@ -194,7 +222,7 @@ export function getExpectedCounts(seedData: SeedDataResult) {
 
     // Comments
     totalComments: seedData.comments.length,
-    deletedComments: seedData.comments.filter((c) => c.deletedAt !== null).length,
+    deletedComments: seedData.comments.filter((c) => c.deletedAt !== null)
+      .length,
   }
 }
-

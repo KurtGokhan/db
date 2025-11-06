@@ -5,7 +5,7 @@ All examples are taken directly from: `~/programs/electric/packages/typescript-c
 ## 1. Vitest Configuration (vitest.config.ts)
 
 ```typescript
-import { defineConfig } from 'vitest/config'
+import { defineConfig } from "vitest/config"
 
 export default defineConfig({
   test: {
@@ -26,6 +26,7 @@ export default defineConfig({
 ```
 
 **Key insights:**
+
 - `fileParallelism: false` is essential for serial execution with shared database
 - Coverage reporters: istanbul with multiple output formats
 - junit output for CI/CD integration
@@ -36,8 +37,8 @@ export default defineConfig({
 ## 2. Global Setup (test/support/global-setup.ts)
 
 ```typescript
-import type { GlobalSetupContext } from 'vitest/node'
-import { makePgClient } from './test-helpers'
+import type { GlobalSetupContext } from "vitest/node"
+import { makePgClient } from "./test-helpers"
 
 const url = process.env.ELECTRIC_URL ?? `http://localhost:3000`
 const proxyUrl = process.env.ELECTRIC_PROXY_CACHE_URL ?? `http://localhost:3002`
@@ -49,7 +50,7 @@ const proxyCacheContainerName = `electric_dev-nginx-1`
 const proxyCachePath = `/var/cache/nginx/*`
 
 // eslint-disable-next-line quotes -- eslint is acting dumb with enforce backtick quotes mode, and is trying to use it here where it's not allowed.
-declare module 'vitest' {
+declare module "vitest" {
   export interface ProvidedContext {
     baseUrl: string
     proxyCacheBaseUrl: string
@@ -110,6 +111,7 @@ export default async function ({ provide }: GlobalSetupContext) {
 ```
 
 **Key insights:**
+
 - Health check recursively polls `/v1/health` endpoint
 - 10-second timeout for server startup
 - Multiple environment variable overrides supported
@@ -121,6 +123,7 @@ export default async function ({ provide }: GlobalSetupContext) {
 ## 3. Test Context Fixtures (test/support/test-context.ts)
 
 ### Base Database Client Fixture
+
 ```typescript
 export const testWithDbClient = test.extend<{
   dbClient: Client
@@ -181,6 +184,7 @@ export const testWithDbClient = test.extend<{
 ```
 
 ### Issues Table Fixture (Extends testWithDbClient)
+
 ```typescript
 export const testWithIssuesTable = testWithDbClient.extend<{
   issuesTableSql: string
@@ -266,6 +270,7 @@ export const testWithIssuesTable = testWithDbClient.extend<{
 ```
 
 **Key insights:**
+
 - Tables named with `task.id` + random suffix for uniqueness
 - SQL comments include file name and test name for debugging
 - Fixtures can depend on parent fixtures
@@ -281,11 +286,11 @@ import {
   ShapeStream,
   ShapeStreamInterface,
   ShapeStreamOptions,
-} from '../../src/client'
-import { Client, ClientConfig } from 'pg'
-import { Message, Row } from '../../src/types'
-import { isChangeMessage } from '../..//src'
-import { isUpToDateMessage } from '../../src/helpers'
+} from "../../src/client"
+import { Client, ClientConfig } from "pg"
+import { Message, Row } from "../../src/types"
+import { isChangeMessage } from "../..//src"
+import { isUpToDateMessage } from "../../src/helpers"
 
 export function makePgClient(overrides: ClientConfig = {}) {
   return new Client({
@@ -383,12 +388,12 @@ export async function waitForTransaction({
 ## 5. Parameterized Tests (test/integration.test.ts)
 
 ```typescript
-import { describe, expect, inject, vi } from 'vitest'
-import { v4 as uuidv4 } from 'uuid'
-import { 
+import { describe, expect, inject, vi } from "vitest"
+import { v4 as uuidv4 } from "uuid"
+import {
   testWithIssuesTable as it,
   testWithMultitypeTable as mit,
-} from './support/test-context'
+} from "./support/test-context"
 
 const BASE_URL = inject(`baseUrl`)
 
@@ -503,7 +508,10 @@ describe(`HTTP Sync`, () => {
       )
     `,
         [
-          [[1, 2, 3], [4, 5, 6]],
+          [
+            [1, 2, 3],
+            [4, 5, 6],
+          ],
           [1, 2, 3],
           [true, false, true],
           [`sad`, `ok`, `happy`],
@@ -531,9 +539,9 @@ describe(`HTTP Sync`, () => {
 ## 6. Parameterized Describe Blocks (test/client.test.ts)
 
 ```typescript
-import { describe, expect, inject } from 'vitest'
-import { testWithIssuesTable as it } from './support/test-context'
-import { ShapeStream, Shape } from '../src'
+import { describe, expect, inject } from "vitest"
+import { testWithIssuesTable as it } from "./support/test-context"
+import { ShapeStream, Shape } from "../src"
 
 const BASE_URL = inject(`baseUrl`)
 
@@ -610,13 +618,13 @@ describe.for(fetchAndSse)(`Shape (liveSSE=$liveSse)`, ({ liveSse }) => {
 ## 7. Non-Database Tests with beforeEach/afterEach (test/expired-shapes-cache.test.ts)
 
 ```typescript
-import { beforeEach, afterEach, describe, expect, it, vi } from 'vitest'
-import { ShapeStream } from '../src'
+import { beforeEach, afterEach, describe, expect, it, vi } from "vitest"
+import { ShapeStream } from "../src"
 import {
   ExpiredShapesCache,
   expiredShapesCache,
-} from '../src/expired-shapes-cache'
-import { EXPIRED_HANDLE_QUERY_PARAM } from '../src/constants'
+} from "../src/expired-shapes-cache"
+import { EXPIRED_HANDLE_QUERY_PARAM } from "../src/constants"
 
 describe(`ExpiredShapesCache`, () => {
   let cache: ExpiredShapesCache
@@ -677,10 +685,10 @@ describe(`ExpiredShapesCache`, () => {
 ## 8. Cache Testing with Docker Container Access (test/cache.test.ts)
 
 ```typescript
-import { describe, expect, assert, inject } from 'vitest'
-import { exec } from 'child_process'
-import { setTimeout as sleep } from 'node:timers/promises'
-import { testWithIssuesTable } from './support/test-context'
+import { describe, expect, assert, inject } from "vitest"
+import { exec } from "child_process"
+import { setTimeout as sleep } from "node:timers/promises"
+import { testWithIssuesTable } from "./support/test-context"
 
 const maxAge = 1 // seconds
 const staleAge = 3 // seconds

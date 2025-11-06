@@ -1,54 +1,32 @@
 /**
  * Electric E2E Test Setup
- * 
+ *
  * Provides configuration and helpers for Electric collection e2e tests
  */
 
-import { createCollection } from '@tanstack/db'
-import { electricCollectionOptions } from '../src/electric'
-import type { E2ETestConfig, User, Post, Comment } from '../../db-collection-e2e/src/types'
-import type { Collection } from '@tanstack/db'
+import { createCollection } from "@tanstack/db"
+import { electricCollectionOptions } from "../src/electric"
+import type { E2ETestConfig } from "../../db-collection-e2e/src/types"
 
-const ELECTRIC_URL = process.env.ELECTRIC_URL ?? 'http://localhost:3000'
-
-/**
- * Map database column names to TypeScript property names
- */
-function mapDbToJs<T extends Record<string, any>>(dbRow: any): T {
-  return {
-    id: dbRow.id,
-    name: dbRow.name,
-    email: dbRow.email,
-    age: dbRow.age,
-    isActive: dbRow.is_active,
-    createdAt: dbRow.created_at,
-    metadata: dbRow.metadata,
-    deletedAt: dbRow.deleted_at,
-    // Post fields
-    userId: dbRow.user_id,
-    title: dbRow.title,
-    content: dbRow.content,
-    viewCount: dbRow.view_count,
-    publishedAt: dbRow.published_at,
-    // Comment fields
-    postId: dbRow.post_id,
-    text: dbRow.text,
-  } as T
-}
+const ELECTRIC_URL = process.env.ELECTRIC_URL ?? `http://localhost:3000`
 
 /**
  * Create Electric collection configuration for e2e tests
  */
-export async function createElectricE2EConfig(options: {
+export function createElectricE2EConfig(options: {
   schema: string
   usersTable: string
   postsTable: string
   commentsTable: string
   baseUrl?: string
-}): Promise<E2ETestConfig> {
-  const { schema, usersTable, postsTable, commentsTable, baseUrl = ELECTRIC_URL } = options
-
-  const seedData = generateSeedData()
+}): E2ETestConfig {
+  const {
+    schema,
+    usersTable,
+    postsTable,
+    commentsTable,
+    baseUrl = ELECTRIC_URL,
+  } = options
 
   // Create eager mode collections (sync entire dataset)
   const eagerUsers = createCollection(
@@ -60,7 +38,7 @@ export async function createElectricE2EConfig(options: {
           table: `${schema}.${usersTable}`,
         },
       },
-      syncMode: 'eager',
+      syncMode: `eager`,
       getKey: (item: User) => item.id,
       startSync: false, // Start manually in tests
     })
@@ -75,7 +53,7 @@ export async function createElectricE2EConfig(options: {
           table: `${schema}.${postsTable}`,
         },
       },
-      syncMode: 'eager',
+      syncMode: `eager`,
       getKey: (item: Post) => item.id,
       startSync: false,
     })
@@ -90,7 +68,7 @@ export async function createElectricE2EConfig(options: {
           table: `${schema}.${commentsTable}`,
         },
       },
-      syncMode: 'eager',
+      syncMode: `eager`,
       getKey: (item: Comment) => item.id,
       startSync: false,
     })
@@ -106,7 +84,7 @@ export async function createElectricE2EConfig(options: {
           table: `${schema}.${usersTable}`,
         },
       },
-      syncMode: 'on-demand',
+      syncMode: `on-demand`,
       getKey: (item: User) => item.id,
       startSync: false,
     })
@@ -121,7 +99,7 @@ export async function createElectricE2EConfig(options: {
           table: `${schema}.${postsTable}`,
         },
       },
-      syncMode: 'on-demand',
+      syncMode: `on-demand`,
       getKey: (item: Post) => item.id,
       startSync: false,
     })
@@ -136,7 +114,7 @@ export async function createElectricE2EConfig(options: {
           table: `${schema}.${commentsTable}`,
         },
       },
-      syncMode: 'on-demand',
+      syncMode: `on-demand`,
       getKey: (item: Comment) => item.id,
       startSync: false,
     })
@@ -171,4 +149,3 @@ export async function createElectricE2EConfig(options: {
     },
   }
 }
-

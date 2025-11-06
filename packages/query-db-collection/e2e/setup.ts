@@ -1,16 +1,18 @@
 /**
  * Query Collection E2E Test Setup
- * 
+ *
  * Provides mock backend and configuration for Query collection e2e tests
  */
 
-import { createCollection } from '@tanstack/db'
-import { QueryClient } from '@tanstack/query-core'
-import { queryCollectionOptions } from '../src/query'
-import type { E2ETestConfig, User, Post, Comment, SeedDataResult } from '../../db-collection-e2e/src/types'
-import { sortBy, filterBy, paginate } from '../../db-collection-e2e/src/utils/helpers'
-import type { Collection } from '@tanstack/db'
-import { vi } from 'vitest'
+import { createCollection } from "@tanstack/db"
+import { QueryClient } from "@tanstack/query-core"
+import { vi } from "vitest"
+import { queryCollectionOptions } from "../src/query"
+import type {
+  E2ETestConfig,
+  SeedDataResult,
+} from "../../db-collection-e2e/src/types"
+import type { Collection } from "@tanstack/db"
 
 /**
  * Mock backend for Query collection testing
@@ -77,7 +79,7 @@ export async function createQueryE2EConfig(options: {
     queryCollectionOptions({
       id: `query-e2e-users-eager-${Date.now()}`,
       queryClient,
-      queryKey: ['e2e', 'users', 'eager'],
+      queryKey: [`e2e`, `users`, `eager`],
       queryFn: mockBackend.fetchUsers,
       getKey: (item: User) => item.id,
       startSync: true,
@@ -88,7 +90,7 @@ export async function createQueryE2EConfig(options: {
     queryCollectionOptions({
       id: `query-e2e-posts-eager-${Date.now()}`,
       queryClient,
-      queryKey: ['e2e', 'posts', 'eager'],
+      queryKey: [`e2e`, `posts`, `eager`],
       queryFn: mockBackend.fetchPosts,
       getKey: (item: Post) => item.id,
       startSync: true,
@@ -99,7 +101,7 @@ export async function createQueryE2EConfig(options: {
     queryCollectionOptions({
       id: `query-e2e-comments-eager-${Date.now()}`,
       queryClient,
-      queryKey: ['e2e', 'comments', 'eager'],
+      queryKey: [`e2e`, `comments`, `eager`],
       queryFn: mockBackend.fetchComments,
       getKey: (item: Comment) => item.id,
       startSync: true,
@@ -113,7 +115,7 @@ export async function createQueryE2EConfig(options: {
     queryCollectionOptions({
       id: `query-e2e-users-ondemand-${Date.now()}`,
       queryClient,
-      queryKey: ['e2e', 'users', 'ondemand'],
+      queryKey: [`e2e`, `users`, `ondemand`],
       queryFn: mockBackend.fetchUsers,
       getKey: (item: User) => item.id,
       startSync: false, // Don't start immediately for on-demand
@@ -124,7 +126,7 @@ export async function createQueryE2EConfig(options: {
     queryCollectionOptions({
       id: `query-e2e-posts-ondemand-${Date.now()}`,
       queryClient,
-      queryKey: ['e2e', 'posts', 'ondemand'],
+      queryKey: [`e2e`, `posts`, `ondemand`],
       queryFn: mockBackend.fetchPosts,
       getKey: (item: Post) => item.id,
       startSync: false,
@@ -135,7 +137,7 @@ export async function createQueryE2EConfig(options: {
     queryCollectionOptions({
       id: `query-e2e-comments-ondemand-${Date.now()}`,
       queryClient,
-      queryKey: ['e2e', 'comments', 'ondemand'],
+      queryKey: [`e2e`, `comments`, `ondemand`],
       queryFn: mockBackend.fetchComments,
       getKey: (item: Comment) => item.id,
       startSync: false,

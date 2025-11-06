@@ -9,6 +9,7 @@ All phases of the E2E test suite implementation have been completed successfully
 ### Phase 1: Infrastructure ✅
 
 **Created:**
+
 - Package structure with `package.json`, `tsconfig.json`, `vite.config.ts`
 - Docker Compose configuration with Postgres + Electric
 - Optimized `postgres.conf` for fast test execution
@@ -19,6 +20,7 @@ All phases of the E2E test suite implementation have been completed successfully
 - Utility functions and custom assertions
 
 **Key Files:**
+
 - `packages/db-collection-e2e/package.json`
 - `packages/db-collection-e2e/docker/docker-compose.yml`
 - `packages/db-collection-e2e/docker/postgres.conf`
@@ -33,12 +35,14 @@ All phases of the E2E test suite implementation have been completed successfully
 ### Phase 2: Core Test Suites ✅
 
 **Implemented:**
+
 1. **Predicates Suite** - Tests for `eq()`, `ne()`, `gt()`, `gte()`, `lt()`, `lte()`, `in()`, `isNull()`, boolean logic
 2. **Pagination Suite** - Tests for `orderBy`, `limit`, `offset`, `setWindow()`, edge cases
 3. **Joins Suite** - 2-way and 3-way joins, mixed syncModes, predicates on joins
 4. **Deduplication Suite** - Concurrent calls, overlapping predicates, callback verification
 
 **Key Files:**
+
 - `packages/db-collection-e2e/src/suites/predicates.test.ts`
 - `packages/db-collection-e2e/src/suites/pagination.test.ts`
 - `packages/db-collection-e2e/src/suites/joins.test.ts`
@@ -47,12 +51,14 @@ All phases of the E2E test suite implementation have been completed successfully
 ### Phase 3: Additional Suites ✅
 
 **Implemented:**
+
 1. **Collation Suite** - Default/custom collation, case sensitivity, inheritance
 2. **Mutations Suite** - Insert, update, delete, soft delete, concurrent mutations
 3. **Live Updates Suite** - Reactive updates, backend mutations (Electric-specific)
 4. **Regression Suite** - Known bugs including memory #7214245 and #9874949
 
 **Key Files:**
+
 - `packages/db-collection-e2e/src/suites/collation.test.ts`
 - `packages/db-collection-e2e/src/suites/mutations.test.ts`
 - `packages/db-collection-e2e/src/suites/live-updates.test.ts`
@@ -61,33 +67,39 @@ All phases of the E2E test suite implementation have been completed successfully
 ### Phase 4: Electric Collection Integration ✅
 
 **Created:**
+
 - Electric e2e setup with Docker orchestration
 - Collection factory for eager/on-demand modes
 - Integration file to run all suites
 
 **Key Files:**
+
 - `packages/electric-db-collection/e2e/setup.ts`
 - `packages/electric-db-collection/e2e/electric.e2e.test.ts`
 
 ### Phase 5: Query Collection Integration ✅
 
 **Created:**
+
 - Mock backend for Query collection testing
 - Collection factory for eager/on-demand modes
 - Integration file (skips Electric-specific Live Updates suite)
 
 **Key Files:**
+
 - `packages/query-db-collection/e2e/setup.ts`
 - `packages/query-db-collection/e2e/query.e2e.test.ts`
 
 ### Phase 6: CI/CD & Documentation ✅
 
 **Created:**
+
 - GitHub Actions workflow for CI
 - Comprehensive README with setup instructions
 - Integration guide for new collections
 
 **Key Files:**
+
 - `.github/workflows/e2e-tests.yml`
 - `packages/db-collection-e2e/README.md`
 
@@ -113,7 +125,9 @@ All phases of the E2E test suite implementation have been completed successfully
 Test suites are exported as factory functions that can be reused across different collection implementations:
 
 ```typescript
-export function createPredicatesTestSuite(getConfig: () => Promise<E2ETestConfig>)
+export function createPredicatesTestSuite(
+  getConfig: () => Promise<E2ETestConfig>
+)
 ```
 
 ### 2. Comprehensive Seed Data
@@ -129,6 +143,7 @@ export function createPredicatesTestSuite(getConfig: () => Promise<E2ETestConfig
 ### 3. Vitest Fixtures
 
 Uses Vitest's `test.extend()` pattern for composable fixtures:
+
 - `testWithDb` - Database client and abort controller
 - `testWithTables` - Creates unique tables per test
 - `testWithSeedData` - Generates and inserts seed data
@@ -179,6 +194,7 @@ docker compose down
 ### CI Pipeline
 
 Tests run automatically on:
+
 - Push to `main` or `query-driven-sync` branches
 - Pull requests to these branches
 
@@ -200,7 +216,7 @@ The test suites are currently structured as placeholders with `TODO` comments. T
 
 ```typescript
 // Current (placeholder):
-it('should filter with eq() on string field', async () => {
+it("should filter with eq() on string field", async () => {
   const config = await getConfig()
   const collection = config.collections.onDemand.users
   // TODO: Implement actual query
@@ -208,21 +224,21 @@ it('should filter with eq() on string field', async () => {
 })
 
 // Future (complete):
-it('should filter with eq() on string field', async () => {
+it("should filter with eq() on string field", async () => {
   const config = await getConfig()
   const collection = config.collections.onDemand.users
-  
+
   const query = collection.liveQuery({
-    where: eq(users.name, 'Alice 0')
+    where: eq(users.name, "Alice 0"),
   })
   await query.preload()
-  
+
   const result = query.getResult()
   expect(result).toHaveLength(1)
-  expect(result[0].name).toBe('Alice 0')
-  
+  expect(result[0].name).toBe("Alice 0")
+
   // Verify predicate pushdown
-  assertLoadedExactly(collection, ['user-0000-4000-8000-000000000000'])
+  assertLoadedExactly(collection, ["user-0000-4000-8000-000000000000"])
 })
 ```
 
@@ -236,8 +252,8 @@ Each test suite is a factory function that accepts a config getter:
 export function createPredicatesTestSuite(
   getConfig: () => Promise<E2ETestConfig>
 ) {
-  describe('Predicates Suite', () => {
-    it('test 1', async () => {
+  describe("Predicates Suite", () => {
+    it("test 1", async () => {
       const config = await getConfig()
       // Use config.collections.onDemand.users, etc.
     })
@@ -289,6 +305,7 @@ Each collection implementation creates this config with their specific collectio
 Total: **30+ files** across the implementation
 
 ### Core Package (db-collection-e2e)
+
 - 1 package.json
 - 1 tsconfig.json
 - 1 vite.config.ts
@@ -303,10 +320,12 @@ Total: **30+ files** across the implementation
 - 1 summary (this file)
 
 ### Integration Files
+
 - 2 Electric e2e files (setup, test)
 - 2 Query e2e files (setup, test)
 
 ### CI/CD
+
 - 1 GitHub Actions workflow
 
 ## Related Documentation
@@ -314,7 +333,7 @@ Total: **30+ files** across the implementation
 - **Plan**: `/e2e-test.plan.md` (attached to conversation)
 - **RFC**: #676 - Query-driven sync
 - **PR**: #763 - Implementation
-- **Memories**: 
+- **Memories**:
   - #7214245 - Initial state race condition
   - #9874949 - LoadSubset naming changes
 
@@ -331,4 +350,3 @@ This implementation was inspired by Electric's proven e2e test patterns, adapted
 ---
 
 **Status**: ✅ Implementation Complete - Ready for integration testing with actual collection implementations
-

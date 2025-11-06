@@ -1,26 +1,26 @@
 /**
  * Query Collection E2E Tests
- * 
+ *
  * Tests using REAL Query collections with mock backend
  */
 
-import { describe, beforeAll, afterAll } from 'vitest'
-import { createCollection } from '@tanstack/db'
-import { QueryClient } from '@tanstack/query-core'
-import { queryCollectionOptions } from '../src/query'
-import { generateSeedData } from '../../db-collection-e2e/src/index'
-import type { E2ETestConfig, User, Post, Comment } from '../../db-collection-e2e/src/types'
+import { afterAll, beforeAll, describe } from "vitest"
+import { createCollection } from "@tanstack/db"
+import { QueryClient } from "@tanstack/query-core"
+import { queryCollectionOptions } from "../src/query"
 import {
-  createPredicatesTestSuite,
-  createPaginationTestSuite,
-  createJoinsTestSuite,
-  createDeduplicationTestSuite,
   createCollationTestSuite,
+  createDeduplicationTestSuite,
+  createJoinsTestSuite,
   createMutationsTestSuite,
+  createPaginationTestSuite,
+  createPredicatesTestSuite,
   createRegressionTestSuite,
-} from '../../db-collection-e2e/src/index'
+  generateSeedData,
+} from "../../db-collection-e2e/src/index"
+import type { E2ETestConfig } from "../../db-collection-e2e/src/types"
 
-describe('Query Collection E2E Tests', () => {
+describe(`Query Collection E2E Tests`, () => {
   let config: E2ETestConfig
   let queryClient: QueryClient
 
@@ -38,9 +38,9 @@ describe('Query Collection E2E Tests', () => {
     // Create REAL Query collections with mock backend queryFn
     const eagerUsers = createCollection(
       queryCollectionOptions({
-        id: 'query-e2e-users-eager',
+        id: `query-e2e-users-eager`,
         queryClient,
-        queryKey: ['e2e', 'users', 'eager'],
+        queryKey: [`e2e`, `users`, `eager`],
         queryFn: async () => {
           // Mock query function that returns seed data
           return seedData.users
@@ -52,9 +52,9 @@ describe('Query Collection E2E Tests', () => {
 
     const eagerPosts = createCollection(
       queryCollectionOptions({
-        id: 'query-e2e-posts-eager',
+        id: `query-e2e-posts-eager`,
         queryClient,
-        queryKey: ['e2e', 'posts', 'eager'],
+        queryKey: [`e2e`, `posts`, `eager`],
         queryFn: async () => {
           return seedData.posts
         },
@@ -65,9 +65,9 @@ describe('Query Collection E2E Tests', () => {
 
     const eagerComments = createCollection(
       queryCollectionOptions({
-        id: 'query-e2e-comments-eager',
+        id: `query-e2e-comments-eager`,
         queryClient,
-        queryKey: ['e2e', 'comments', 'eager'],
+        queryKey: [`e2e`, `comments`, `eager`],
         queryFn: async () => {
           return seedData.comments
         },
@@ -78,9 +78,9 @@ describe('Query Collection E2E Tests', () => {
 
     const onDemandUsers = createCollection(
       queryCollectionOptions({
-        id: 'query-e2e-users-ondemand',
+        id: `query-e2e-users-ondemand`,
         queryClient,
-        queryKey: ['e2e', 'users', 'ondemand'],
+        queryKey: [`e2e`, `users`, `ondemand`],
         queryFn: async () => {
           return seedData.users
         },
@@ -91,9 +91,9 @@ describe('Query Collection E2E Tests', () => {
 
     const onDemandPosts = createCollection(
       queryCollectionOptions({
-        id: 'query-e2e-posts-ondemand',
+        id: `query-e2e-posts-ondemand`,
         queryClient,
-        queryKey: ['e2e', 'posts', 'ondemand'],
+        queryKey: [`e2e`, `posts`, `ondemand`],
         queryFn: async () => {
           return seedData.posts
         },
@@ -104,9 +104,9 @@ describe('Query Collection E2E Tests', () => {
 
     const onDemandComments = createCollection(
       queryCollectionOptions({
-        id: 'query-e2e-comments-ondemand',
+        id: `query-e2e-comments-ondemand`,
         queryClient,
-        queryKey: ['e2e', 'comments', 'ondemand'],
+        queryKey: [`e2e`, `comments`, `ondemand`],
         queryFn: async () => {
           return seedData.comments
         },
@@ -154,9 +154,7 @@ describe('Query Collection E2E Tests', () => {
   })
 
   afterAll(async () => {
-    if (config) {
-      await config.teardown()
-    }
+    await config.teardown()
   })
 
   async function getConfig() {

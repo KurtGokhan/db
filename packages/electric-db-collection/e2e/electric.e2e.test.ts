@@ -1,29 +1,28 @@
 /**
  * Electric Collection E2E Tests
- * 
+ *
  * REAL end-to-end tests using actual Postgres + Electric sync
  */
 
-import { describe, beforeAll, afterAll } from 'vitest'
-import { inject } from 'vitest'
-import { createCollection } from '@tanstack/db'
-import { electricCollectionOptions } from '../src/electric'
-import { makePgClient } from '../../db-collection-e2e/support/global-setup'
-import { generateSeedData } from '../../db-collection-e2e/src/index'
-import type { E2ETestConfig, User, Post, Comment } from '../../db-collection-e2e/src/types'
-import type { Client } from 'pg'
+import { afterAll, beforeAll, describe, inject } from "vitest"
+import { createCollection } from "@tanstack/db"
+import { electricCollectionOptions } from "../src/electric"
+import { makePgClient } from "../../db-collection-e2e/support/global-setup"
 import {
-  createPredicatesTestSuite,
-  createPaginationTestSuite,
-  createJoinsTestSuite,
-  createDeduplicationTestSuite,
   createCollationTestSuite,
-  createMutationsTestSuite,
+  createDeduplicationTestSuite,
+  createJoinsTestSuite,
   createLiveUpdatesTestSuite,
+  createMutationsTestSuite,
+  createPaginationTestSuite,
+  createPredicatesTestSuite,
   createRegressionTestSuite,
-} from '../../db-collection-e2e/src/index'
+  generateSeedData,
+} from "../../db-collection-e2e/src/index"
+import type { E2ETestConfig } from "../../db-collection-e2e/src/types"
+import type { Client } from "pg"
 
-describe('Electric Collection E2E Tests', () => {
+describe(`Electric Collection E2E Tests`, () => {
   let config: E2ETestConfig
   let dbClient: Client
   let usersTable: string
@@ -31,8 +30,8 @@ describe('Electric Collection E2E Tests', () => {
   let commentsTable: string
 
   beforeAll(async () => {
-    const baseUrl = inject('baseUrl')
-    const testSchema = inject('testSchema')
+    const baseUrl = inject(`baseUrl`)
+    const testSchema = inject(`testSchema`)
     const seedData = generateSeedData()
 
     // Create unique table names (quoted for Electric)
@@ -142,7 +141,7 @@ describe('Electric Collection E2E Tests', () => {
             table: `${testSchema}.${usersTable}`,
           },
         },
-        syncMode: 'eager',
+        syncMode: `eager`,
         getKey: (item: any) => item.id,
         startSync: true,
       })
@@ -157,7 +156,7 @@ describe('Electric Collection E2E Tests', () => {
             table: `${testSchema}.${postsTable}`,
           },
         },
-        syncMode: 'eager',
+        syncMode: `eager`,
         getKey: (item: any) => item.id,
         startSync: true,
       })
@@ -172,7 +171,7 @@ describe('Electric Collection E2E Tests', () => {
             table: `${testSchema}.${commentsTable}`,
           },
         },
-        syncMode: 'eager',
+        syncMode: `eager`,
         getKey: (item: any) => item.id,
         startSync: true,
       })
@@ -187,7 +186,7 @@ describe('Electric Collection E2E Tests', () => {
             table: `${testSchema}.${usersTable}`,
           },
         },
-        syncMode: 'on-demand',
+        syncMode: `on-demand`,
         getKey: (item: any) => item.id,
         startSync: true,
       })
@@ -202,7 +201,7 @@ describe('Electric Collection E2E Tests', () => {
             table: `${testSchema}.${postsTable}`,
           },
         },
-        syncMode: 'on-demand',
+        syncMode: `on-demand`,
         getKey: (item: any) => item.id,
         startSync: true,
       })
@@ -217,7 +216,7 @@ describe('Electric Collection E2E Tests', () => {
             table: `${testSchema}.${commentsTable}`,
           },
         },
-        syncMode: 'on-demand',
+        syncMode: `on-demand`,
         getKey: (item: any) => item.id,
         startSync: true,
       })
@@ -261,26 +260,22 @@ describe('Electric Collection E2E Tests', () => {
   }, 60000) // 60 second timeout for setup
 
   afterAll(async () => {
-    if (config) {
-      await config.teardown()
-    }
+    await config.teardown()
 
     // Drop tables
-    if (dbClient) {
-      try {
-        await dbClient.query(`DROP TABLE IF EXISTS ${commentsTable}`)
-        await dbClient.query(`DROP TABLE IF EXISTS ${postsTable}`)
-        await dbClient.query(`DROP TABLE IF EXISTS ${usersTable}`)
-      } catch (e) {
-        console.error('Error dropping tables:', e)
-      }
-      await dbClient.end()
+    try {
+      await dbClient.query(`DROP TABLE IF EXISTS ${commentsTable}`)
+      await dbClient.query(`DROP TABLE IF EXISTS ${postsTable}`)
+      await dbClient.query(`DROP TABLE IF EXISTS ${usersTable}`)
+    } catch (e) {
+      console.error(`Error dropping tables:`, e)
     }
+    await dbClient.end()
   })
 
   // Helper to get config
-  async function getConfig() {
-    return config
+  function getConfig() {
+    return Promise.resolve(config)
   }
 
   // Run all test suites
